@@ -63,6 +63,10 @@ def get_directory_size(path):
 
 def main():
     # Create and start original container
+    print(
+        "Starting original container...\n"
+        "(This might take a while the first time)"
+    )
     container_id = run_command(
         "docker run -d --name redis --security-opt seccomp:unconfined "
         "redis/redis-stack-server:latest"
@@ -77,7 +81,8 @@ def main():
     # Create a checkpoint
     start_time_checkpoint = time.time()  # Start time for checkpointing
     run_command(
-        f"docker checkpoint create --checkpoint-dir={CHECKPOINT_DIR} "
+        f"docker checkpoint create "
+        f"--checkpoint-dir={CHECKPOINT_DIR} "
         f"redis {CHECKPOINT_NAME}"
     )
     end_time_checkpoint = time.time()  # End time for checkpointing
