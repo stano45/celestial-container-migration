@@ -57,7 +57,7 @@ def generate_redis_dump():
     with open(DATA_JSON_PATH, "w") as file:
         json.dump(data, file)
 
-    # Kill and remove the old containerded from append only file: 0.009 seconds
+    # Kill and remove the old containe
     stop_container(container_id)
 
     # Wait for the container to stop

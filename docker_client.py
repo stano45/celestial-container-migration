@@ -22,7 +22,7 @@ class DockerClient:
         volume_name,
         container_name,
     ):
-        print(f"Starting container ${container_name}\n")
+        print(f"Starting container {container_name}\n")
         run_container_start_time = time.time()
 
         # Volumes configuration
@@ -41,12 +41,12 @@ class DockerClient:
 
         run_container_duration = time.time() - run_container_start_time
         print(
-            f"Container ${container_name} started with id: {container.id} "
+            f"Container {container_name} started with id: {container.id} "
             f"in {run_container_duration:.2f} seconds."
         )
         print(
             "Waiting 5sec for redis to fully initialize in "
-            f"container ${container_name}..."
+            f"container {container_name}..."
         )
         time.sleep(5)
 
@@ -88,12 +88,18 @@ class DockerClient:
         ]
 
     def remove_all_redis_containers(self):
-        for container in self.get_all_redis_containers():
-            self.stop_and_remove_container(container.id)
-            print(
-                f"Successfully killed and removed container "
-                f'"{container.name}".'
-            )
+        containers = self.docker_client.containers.list(all=True)
+        # Loop through the containers
+        for container in containers:
+            # If the container's image contains "redis"
+            if "redis" in container.image.tags[0]:
+                # Stop and remove the container
+                container.stop()
+                container.remove()
+                print(
+                    f"Successfully killed and removed container with ID "
+                    f'"{container.id}" based on "redis" image.'
+                )
 
     def check_appendonlydir_exist_in_volume(self, volume_name):
         self.docker_client.containers.run(

@@ -133,6 +133,9 @@ def main():
         f"--checkpoint-dir={CHECKPOINT_DIR} "
         f"redis {CHECKPOINT_NAME}"
     )
+
+    docker_client.remove_all_redis_containers()
+
     checkpoint_duration = time.time() - checkpoint_start_time
     print(
         f"Checkpoint created at {CHECKPOINT_DIR}/{CHECKPOINT_NAME} "
