@@ -1,7 +1,5 @@
 import subprocess
 
-DATA_JSON_PATH = "./tmp/data.json"
-
 
 def run_command(command, ignore_error=False):
     """Execute the command and return its output."""
