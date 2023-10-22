@@ -3,12 +3,11 @@ import os
 import random
 import string
 import time
+from docker_client import DockerClient
 
 from utils import (
     DATA_JSON_PATH,
     run_command,
-    stop_and_remove_container,
-    stop_container,
 )
 
 from generate_random_data import generate_redis_dump
@@ -61,37 +60,13 @@ def get_directory_size(path):
     return int(size_in_bytes)
 
 
-def does_appendonlydir_exist_in_volume(volume_name):
-    run_command(
-        "docker run -d --rm "
-        "--name temp_check_container "
-        f"-v {volume_name}:/data "
-        "alpine:latest "
-        "tail -f /dev/null"
-    )
-    time.sleep(2)  # wait for container to be up
-    result = run_command(
-        "docker exec temp_check_container ls /data/appendonlydir",
-        ignore_error=True,
-    )
-    run_command("docker stop temp_check_container")
-    return "appendonly.aof.1.incr.aof" in result
-
-
 def main():
     # -----------------------------SETUP------------------------------------
+    docker_client = DockerClient()
 
     # Kill and remove any old containers
     if KILL_OLD_CONTAINERS:
-        redis_container_names = [
-            "redis",
-            "redis-clone",
-            "redis_new",
-            "redis-tmp-volume",
-        ]
-        for name in redis_container_names:
-            stop_and_remove_container(name)
-            print(f'Successfully killed and removed container "{name}".')
+        docker_client.remove_all_redis_containers()
 
     # Clean old checkpoints
     if CLEAN_OLD_CHECKPOINT:
@@ -102,7 +77,11 @@ def main():
         )
 
     # Check if the appendonlydir exists in the volume
-    if not does_appendonlydir_exist_in_volume(VOLUME_NAME) or REGENERATE_DATA:
+    if (
+        REGENERATE_DATA
+        or not docker_client.check_appendonlydir_exist_in_volume(VOLUME_NAME)
+    ):
+        print("Generating Redis dump...")
         generate_redis_dump()
 
     # -----------------------------CHECKPOINT---------------------------

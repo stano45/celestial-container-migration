@@ -1,13 +1,10 @@
 import json
 import os
-import random
-import string
 import time
-import redis
-from tqdm import tqdm
+from redis_client import RedisClient
+from docker_client import DockerClient
 from utils import (
     DATA_JSON_PATH,
-    stop_and_remove_container,
     run_command,
     stop_container,
 )
@@ -15,37 +12,6 @@ from utils import (
 DATA_SIZE_MB = 10
 KEYS_COUNT = 100
 BYTES_PER_KEY = (DATA_SIZE_MB * 1024 * 1024) // KEYS_COUNT
-
-
-class RedisClient:
-    def __init__(self, host, port=6379):
-        self.client = redis.Redis(host=host, port=port, decode_responses=True)
-
-    def write_data(self, keys_count, bytes_per_key):
-        data = {}
-        for i in tqdm(range(1, keys_count + 1), desc="Writing to Redis"):
-            key = f"key{i}"
-            value = self._generate_random_string(bytes_per_key)
-            self.client.set(key, value)
-            data[key] = value
-        return data
-
-    def verify_data(self, data):
-        for key, original_value in data.items():
-            clone_value = self.client.get(key)
-            if original_value != clone_value:
-                raise RuntimeError(
-                    f"Data mismatch for key {key} between saved "
-                    "data and cloned container!"
-                )
-
-    @staticmethod
-    def _generate_random_string(bytes):
-        """Generate a random string of given length."""
-        return "".join(
-            random.choice(string.ascii_letters + string.digits)
-            for _ in range(bytes)
-        )
 
 
 def get_container_ip(container_id):
