@@ -1,11 +1,11 @@
 import json
 import os
-import time
 from config import (
     RANDOM_DATA_SIZE_MB,
     RANDOM_DATA_KEY_COUNT,
     RANDOM_DATA_JSON_PATH,
     RANDOM_DATA_VOLUME_NAME,
+    TEMP_REDIS_CONTAINER_NAME,
 )
 from redis_client import RedisClient
 from docker_client import DockerClient
@@ -27,7 +27,7 @@ def generate_redis_dump():
 
     container = docker_client.run_redis_container(
         volume_name=RANDOM_DATA_VOLUME_NAME,
-        container_name="redis-tmp",
+        container_name=TEMP_REDIS_CONTAINER_NAME,
     )
 
     redis_client = RedisClient(docker_client.get_container_ip(container.id))
@@ -37,8 +37,13 @@ def generate_redis_dump():
     redis_client.save()
     # Disable Persistence in Redis
     print("Disabling Redis persistence...")
-    run_command('docker exec redis-tmp redis-cli config set save ""')
-    run_command("docker exec redis-tmp redis-cli config set appendonly no")
+    run_command(
+        f'docker exec {TEMP_REDIS_CONTAINER_NAME} redis-cli config set save ""'
+    )
+    run_command(
+        f"docker exec {TEMP_REDIS_CONTAINER_NAME} redis-cli "
+        "config set appendonly no"
+    )
 
     if not os.path.exists("./tmp"):
         os.mkdir("tmp")
@@ -48,5 +53,5 @@ def generate_redis_dump():
 
     docker_client.stop_and_remove_container(container.id)
 
-    print("Waiting 5sec for the container to stop...")
-    time.sleep(5)
+    # print("Waiting 2sec for the container to stop...")
+    # time.sleep(2)

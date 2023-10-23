@@ -1,5 +1,6 @@
 import time
 import docker
+from config import TEMP_CHECK_CONTAINER_NAME
 
 from utils import run_command
 
@@ -44,11 +45,11 @@ class DockerClient:
             f"Container {container_name} started with id: {container.id} "
             f"in {run_container_duration:.2f} seconds."
         )
-        print(
-            "Waiting 5 seconds for redis to initialize in "
-            f"container {container_name}..."
-        )
-        time.sleep(5)
+        # print(
+        #     "Waiting 2 seconds for redis to initialize in "
+        #     f"container {container_name}..."
+        # )
+        # time.sleep(2)
 
         return container
 
@@ -91,12 +92,14 @@ class DockerClient:
             f"docker start --checkpoint={checkpoint_name} {container_id}"
         )
 
-    def create_checkpoint(self, container_id, checkpoint_dir, checkpoint_name):
+    def create_checkpoint(
+        self, container_name, checkpoint_dir, checkpoint_name
+    ):
         print(f"Creating checkpoint {checkpoint_name}...")
         run_command(
             "docker checkpoint create "
             f"--checkpoint-dir={checkpoint_dir} "
-            f"redis {checkpoint_name}"
+            f"{container_name} {checkpoint_name}"
         )
 
     def stop_container(self, container_id):
@@ -118,12 +121,19 @@ class DockerClient:
     def list_containers(self):
         return self.docker_client.containers.list()
 
-    def get_all_redis_containers(self):
-        return [
-            container
-            for container in self.list_containers()
-            if "redis" in container.name
-        ]
+    def remove_container_by_name(self, container_name):
+        try:
+            container = self.docker_client.containers.get(container_name)
+        except docker.errors.NotFound:
+            print(f"Container {container_name} not found for removing.")
+            return
+
+        container.stop()
+        container.remove()
+        print(
+            f"Stopped and removed container {container_name} with ID "
+            f'"{container.id}".'
+        )
 
     def remove_all_redis_containers(self):
         containers = self.docker_client.containers.list(all=True)
@@ -139,14 +149,14 @@ class DockerClient:
     def check_appendonlydir_exist_in_volume(self, volume_name):
         self.docker_client.containers.run(
             "alpine:latest",
-            name="temp_check_container",
+            name=TEMP_CHECK_CONTAINER_NAME,
             volumes={volume_name: {"bind": "/data", "mode": "rw"}},
             detach=True,
             command="tail -f /dev/null",
         )
-        time.sleep(2)
+        # time.sleep(2)
         result = self.docker_client.containers.get(
-            "temp_check_container"
+            TEMP_CHECK_CONTAINER_NAME
         ).exec_run("ls /data/appendonlydir")
-        self.stop_and_remove_container("temp_check_container")
-        return "appendonly.aof.1.incr.aof" in result.output.decode("utf-8")
+        self.stop_and_remove_container(TEMP_CHECK_CONTAINER_NAME)
+        return "appendonly.aof" in result.output.decode("utf-8")

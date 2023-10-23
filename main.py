@@ -1,62 +1,27 @@
 import json
 import os
-import random
-import string
 import time
 from config import (
     CHECKPOINT_DIR,
     CHECKPOINT_NAME,
     CLEANUP_OLD_CONTAINERS,
+    CLONE_REDIS_CONTAINER_NAME,
+    ORIGINAL_REDIS_CONTAINER_NAME,
     RANDOM_DATA_JSON_PATH,
     RANDOM_DATA_VOLUME_NAME,
     REGENERATE_RANDOM_DATA,
     REMOVE_OLD_CHECKPOINT,
+    USED_CONTAINERS,
 )
 from docker_client import DockerClient
 from redis_client import RedisClient
 
 from utils import (
+    get_directory_size,
     run_command,
 )
 
 from generate_random_data import generate_redis_dump
-
-
-def generate_random_string(bytes):
-    """Generate a random string of given length."""
-    return "".join(
-        random.choice(string.ascii_letters + string.digits)
-        for _ in range(bytes)
-    )
-
-
-def write_data_into_redis(container_id, keys_count, bytes_per_key):
-    data = {}
-    for i in range(1, keys_count + 1):
-        key = f"key{i}"
-        value = generate_random_string(bytes_per_key)
-        run_command(f"docker exec {container_id} redis-cli set {key} {value}")
-        data[key] = value
-    return data
-
-
-def verify_data_in_cloned_container(container_id, data):
-    for key, original_value in data.items():
-        clone_value = run_command(
-            f"docker exec {container_id} redis-cli get {key}"
-        )
-        if original_value != clone_value:
-            raise RuntimeError(
-                f"Data mismatch for key {key} between saved data and ",
-                "cloned container!",
-            )
-
-
-def get_directory_size(path):
-    """Returns the size of a directory in bytes."""
-    size_output = run_command(f"sudo du -sb {path}")
-    size_in_bytes, _ = size_output.split("\t", 1)
-    return int(size_in_bytes)
 
 
 def main():
@@ -65,7 +30,8 @@ def main():
 
     # Kill and remove any old containers
     if CLEANUP_OLD_CONTAINERS:
-        docker_client.remove_all_redis_containers()
+        for container_name in USED_CONTAINERS:
+            docker_client.remove_container_by_name(container_name)
 
     # Clean old checkpoints
     if REMOVE_OLD_CHECKPOINT:
@@ -74,7 +40,7 @@ def main():
 
     # Check if the appendonlydir exists in the volume
     if (
-        REGENERATE_RANDOM_DATA
+        REGENERATE_RANDOM_DATA is True
         or not docker_client.check_appendonlydir_exist_in_volume(
             RANDOM_DATA_VOLUME_NAME
         )
@@ -93,7 +59,7 @@ def main():
 
     original_container = docker_client.run_redis_container(
         volume_name=RANDOM_DATA_VOLUME_NAME,
-        container_name="redis",
+        container_name=ORIGINAL_REDIS_CONTAINER_NAME,
     )
 
     run_container_duration = time.time() - run_container_start_time
@@ -104,18 +70,24 @@ def main():
 
     # Save Redis state manually
     print("Initiating Redis background save...")
-    run_command("docker exec redis redis-cli save")
+    run_command(f"docker exec {ORIGINAL_REDIS_CONTAINER_NAME} redis-cli save")
 
     # Disable Persistence in Redis
     print("Disabling Redis persistence...")
-    run_command('docker exec redis redis-cli config set save ""')
-    run_command("docker exec redis redis-cli config set appendonly no")
+    run_command(
+        f"docker exec {ORIGINAL_REDIS_CONTAINER_NAME} "
+        'redis-cli config set save ""'
+    )
+    run_command(
+        f"docker exec {ORIGINAL_REDIS_CONTAINER_NAME} "
+        "redis-cli config set appendonly no"
+    )
 
     checkpoint_start_time = time.time()
 
     # Create a checkpoint
     docker_client.create_checkpoint(
-        container_id=original_container.id,
+        container_name=ORIGINAL_REDIS_CONTAINER_NAME,
         checkpoint_dir=CHECKPOINT_DIR,
         checkpoint_name=CHECKPOINT_NAME,
     )
@@ -128,7 +100,7 @@ def main():
 
     original_container.stop()
     original_container.remove()
-    time.sleep(5)
+    # time.sleep(2)
 
     # Get and print checkpoint size (uncompressed)
     checkpoint_size_bytes = get_directory_size(
@@ -161,7 +133,7 @@ def main():
     # Create a new container
     restore_start_time = time.time()
     cloned_container = docker_client.create_redis_container(
-        container_name="redis-clone",
+        container_name=CLONE_REDIS_CONTAINER_NAME,
         volume_name=RANDOM_DATA_VOLUME_NAME,
     )
 

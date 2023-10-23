@@ -13,14 +13,8 @@ def run_command(command, ignore_error=False):
     return result.stdout.strip()
 
 
-def remove_container(container_id):
-    run_command(f"docker rm {container_id}", ignore_error=True)
-
-
-def stop_container(container_id):
-    run_command(f"docker stop {container_id}", ignore_error=True)
-
-
-def stop_and_remove_container(container_id):
-    stop_container(container_id)
-    remove_container(container_id)
+def get_directory_size(path):
+    """Returns the size of a directory in bytes."""
+    size_output = run_command(f"sudo du -sb {path}")
+    size_in_bytes, _ = size_output.split("\t", 1)
+    return int(size_in_bytes)
