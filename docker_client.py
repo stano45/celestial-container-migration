@@ -7,9 +7,7 @@ from utils import run_command
 
 class DockerClient:
     def __init__(self):
-        self.docker_client = docker.DockerClient(
-            base_url="unix://var/run/docker.sock"
-        )
+        self.docker_client = docker.from_env()
 
     def create_volume(self, volume_name):
         print(f"Creating volume {volume_name}...")
@@ -53,11 +51,7 @@ class DockerClient:
 
         return container
 
-    def create_redis_container(
-        self,
-        volume_name,
-        container_name,
-    ):
+    def create_redis_container(self, container_name, volume_name=None):
         print(f"Creating container {container_name}")
         run_container_start_time = time.time()
 
@@ -120,6 +114,9 @@ class DockerClient:
 
     def list_containers(self):
         return self.docker_client.containers.list()
+
+    def get_container_by_name(self, container_name):
+        return self.docker_client.containers.get(container_name)
 
     def remove_container_by_name(self, container_name):
         try:
