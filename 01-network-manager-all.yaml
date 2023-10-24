@@ -1,0 +1,18 @@
+# Copy this to /etc/netplan/
+# Then run: sudo netplan apply
+# And reboot the VM
+# This will configure the network interface to use a static IP address and disable DHCP
+# Make sure to change the IP address and gateway to match your network
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    enp0s3:
+      dhcp4: no
+      addresses:
+      # Change the address and gateway to match your network
+      # In this project, we use:
+      # - 192.168.1.2/24
+      # for VM A and
+      # - 192.168.1.3/24
+        - 192.168.1.3/24
