@@ -12,7 +12,7 @@ USED_CONTAINERS = [
 
 REMOVE_OLD_CHECKPOINT = True
 CHECKPOINT_DIR = "/tmp"
-CHECKPOINT_NAME = "checkpoint-redis"
+CHECKPOINT_NAME = "docker-checkpoint"
 
 REGENERATE_RANDOM_DATA = False
 RANDOM_DATA_JSON_PATH = "./tmp/data.json"
