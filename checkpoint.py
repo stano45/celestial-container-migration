@@ -16,6 +16,9 @@ from utils import (
 def checkpoint(container_id):
     # -----------------------------SETUP------------------------------------
     docker_client = DockerClient()
+
+    checkpoint_start_time = time.time()
+    checkpoint_dir = os.path.expanduser(CHECKPOINT_DIR)
     checkpoint_name = f"{CHECKPOINT_NAME}-{container_id}"
 
     # Clean old checkpoints
@@ -30,8 +33,8 @@ def checkpoint(container_id):
     print(f"Got original container with id: {container.id}")
 
     # Save Redis state manually
-    print("Initiating Redis background save...")
-    run_command(f"docker exec -it {container.id} redis-cli save")
+    # print("Initiating Redis background save...")
+    # run_command(f"docker exec -it {container.id} redis-cli save")
 
     # Disable Persistence in Redis
     print("Disabling Redis persistence...")
@@ -42,23 +45,23 @@ def checkpoint(container_id):
         f"docker exec -it {container.id} " "redis-cli config set appendonly no"
     )
 
-    checkpoint_start_time = time.time()
+    os.makedirs(os.path.join(checkpoint_dir), exist_ok=True)
 
     # Create a checkpoint
     docker_client.create_checkpoint(
         container_name=container.id,
-        checkpoint_dir=CHECKPOINT_DIR,
+        checkpoint_dir=checkpoint_dir,
         checkpoint_name=checkpoint_name,
     )
 
     checkpoint_duration = time.time() - checkpoint_start_time
     print(
-        f"Checkpoint created at {CHECKPOINT_DIR}/{checkpoint_name} "
+        f"Checkpoint created at {checkpoint_dir}/{checkpoint_name} "
         f"in {checkpoint_duration:.2f} seconds."
     )
 
     checkpoint_size_bytes = get_directory_size(
-        os.path.join(CHECKPOINT_DIR, checkpoint_name)
+        os.path.join(checkpoint_dir, checkpoint_name)
     )
     print(
         "Size of uncompressed checkpoint: "
@@ -73,7 +76,7 @@ def checkpoint(container_id):
     start_time_compress = time.time()
     run_command(
         f"sudo tar -czvf {compressed_checkpoint_path} "
-        f"-C {CHECKPOINT_DIR} {checkpoint_name}"
+        f"-C {checkpoint_dir} {checkpoint_name}"
     )
     compress_duration = time.time() - start_time_compress
 
@@ -87,3 +90,7 @@ def checkpoint(container_id):
     )
 
     return compressed_checkpoint_path
+
+
+if __name__ == "__main__":
+    checkpoint(container_id="redis")

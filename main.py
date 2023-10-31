@@ -141,12 +141,12 @@ def main():
     # This is a workaround, see:
     # https://github.com/moby/moby/issues/37344#issuecomment-450782189
     # run_command(
-    #     f"sudo tar -xzvf ~/docker-checkpoints/{CHECKPOINT_NAME}.tar.gz "
+    #     f"tar -xzvf ~/docker-checkpoints/{CHECKPOINT_NAME}.tar.gz "
     #     f"-C /var/lib/docker/containers/{clone_container_id}/checkpoints/"
     # )
 
     run_command(
-        f"sudo mv "
+        f"mv "
         f"{CHECKPOINT_DIR}/{CHECKPOINT_NAME} "
         f"/var/lib/docker/containers/{cloned_container.id}/"
         f"checkpoints/"
