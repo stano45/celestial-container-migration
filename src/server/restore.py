@@ -1,12 +1,12 @@
 import time
-from config import CLEANUP_OLD_CONTAINERS
-from podman_client import PodmanClient
+from src.server.config import REMOVE_OLD_CONTAINER
+from src.server.podman_client import PodmanClient
 
 
 def restore(container_name: str, checkpoint_file_path: str):
     podman_client = PodmanClient()
 
-    if CLEANUP_OLD_CONTAINERS:
+    if REMOVE_OLD_CONTAINER:
         podman_client.stop_and_remove_container(container_name)
 
     restore_start_time = time.time()

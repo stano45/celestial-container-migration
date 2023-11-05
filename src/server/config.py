@@ -1,0 +1,4 @@
+REMOVE_OLD_CONTAINER = True
+
+CHECKPOINT_DIR = "/tmp"
+CHECKPOINT_NAME = "podman-checkpoint"

@@ -1,7 +1,7 @@
 import json
 import time
 
-from utils import run_command
+from src.server.utils import run_command
 
 
 class PodmanClient:
@@ -69,7 +69,7 @@ class PodmanClient:
         except (KeyError, IndexError) as e:
             print(f"Error extracting volume information: {e}")
 
-        return []  # Return an empty list in case of an error
+        return []
 
     def remove_volume(self, volume_id):
         print(f"Removing volume {volume_id}...")

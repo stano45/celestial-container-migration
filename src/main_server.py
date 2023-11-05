@@ -1,28 +1,12 @@
-from checkpoint import checkpoint
+from src.server.checkpoint import checkpoint
 from flask import Flask, request, jsonify, send_file
 from requests import RequestException
 import requests
-from config import CHECKPOINT_NAME
+from src.server.config import CHECKPOINT_NAME
 
-from restore import restore
+from src.server.restore import restore
 
 app = Flask(__name__)
-
-
-def get_checkpoint_file(host, container_id):
-    url = f"http://{host}:8000/containers/{container_id}"
-
-    response = requests.get(url, stream=True)
-    response.raise_for_status()
-
-    # Save the file
-    checkpoint_name = f"{CHECKPOINT_NAME}-{container_id}"
-    file_path = f"{checkpoint_name}.tar.gz"
-    with open(file_path, "wb") as f:
-        for chunk in response.iter_content(chunk_size=8192):
-            f.write(chunk)
-
-    return file_path
 
 
 @app.route("/start_migration", methods=["POST"])
@@ -53,5 +37,25 @@ def migrate(container_id):
     return send_file(checkpoint_path, mimetype="application/gzip")
 
 
-if __name__ == "__main__":
+def get_checkpoint_file(host, container_id):
+    url = f"http://{host}:8000/containers/{container_id}"
+
+    response = requests.get(url, stream=True)
+    response.raise_for_status()
+
+    # Save the file
+    checkpoint_name = f"{CHECKPOINT_NAME}-{container_id}"
+    file_path = f"{checkpoint_name}.tar.gz"
+    with open(file_path, "wb") as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            f.write(chunk)
+
+    return file_path
+
+
+def main():
     app.run(host="0.0.0.0", port=8000)
+
+
+if __name__ == "__main__":
+    main()
