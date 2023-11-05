@@ -161,3 +161,6 @@ cython_debug/
 
 data.json
 dump.rdb
+
+podman-checkpoint*
+Release.key

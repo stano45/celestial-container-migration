@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify
+from checkpoint import checkpoint
+from flask import Flask, request, jsonify, send_file
 from requests import RequestException
 import requests
 from config import CHECKPOINT_NAME
@@ -31,20 +32,26 @@ def start_migration():
     container_name = data.get("container_name")
 
     try:
+        print(f"Fetching container {container_name}...")
+
         file_path = get_checkpoint_file(
             host=server_ip, container_id=container_name
         )
-        print(f"File saved at {file_path}")
-        checkpoint_name = f"{CHECKPOINT_NAME}-{container_name}"
-        restore(
-            checkpoint_file_path=file_path,
-            container_name=container_name,
-            checkpoint_name=checkpoint_name,
-        )
+        print(f"Checkpoint saved at {file_path}")
+        restore(container_name=container_name, checkpoint_file_path=file_path)
         return jsonify({"status": "success"}), 200
     except RequestException as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
+@app.route("/containers/<container_id>", methods=["GET"])
+def migrate(container_id):
+    print(f"Checkpointing container {container_id}...")
+    checkpoint_path = checkpoint(container_id=container_id)
+    print(f"Checkpoint created {checkpoint_path}")
+    print(f"Returning container {container_id}.")
+    return send_file(checkpoint_path, mimetype="application/gzip")
+
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=9000)
+    app.run(host="0.0.0.0", port=8000)

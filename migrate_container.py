@@ -3,16 +3,16 @@ import time
 import requests
 
 
-def send_container_migration_request(client_ip, server_ip, container_name):
+def send_container_migration_request(from_ip, to_ip, container_name):
     """Send a request to the client to initiate container migration."""
-    client_url = f"http://{client_ip}:9000/start_migration"
+    client_url = f"http://{to_ip}:8000/start_migration"
 
-    payload = {"server_ip": server_ip, "container_name": container_name}
+    payload = {"server_ip": from_ip, "container_name": container_name}
 
     try:
         print(
             f"POST Migration request to {client_url}, migrating "
-            f"{container_name} from {server_ip} to {client_ip}."
+            f"{container_name} from {from_ip} to {to_ip}."
         )
         migration_start_time = time.time()
         response = requests.post(client_url, json=payload)
@@ -34,12 +34,12 @@ def send_container_migration_request(client_ip, server_ip, container_name):
 if __name__ == "__main__":
     if len(sys.argv) != 4:
         print(
-            "Usage: python script.py <server_ip> <client_ip> <container_name>"
+            "Usage: python request_container.py <from_ip> <to_ip> <container_name>"
         )
         sys.exit(1)
 
-    server_ip = sys.argv[1]
-    client_ip = sys.argv[2]
+    from_ip = sys.argv[1]
+    to_ip = sys.argv[2]
     container_name = sys.argv[3]
 
-    send_container_migration_request(client_ip, server_ip, container_name)
+    send_container_migration_request(from_ip, to_ip, container_name)

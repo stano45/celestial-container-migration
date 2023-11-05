@@ -20,6 +20,8 @@ def checkpoint(container_id):
     checkpoint_path = os.path.join(checkpoint_dir, checkpoint_name)
     os.makedirs(os.path.join(checkpoint_dir), exist_ok=True)
 
+    volumes = podman_client.get_volume_ids_of_container(container_id)
+
     checkpoint_start_time = time.time()
 
     podman_client.create_checkpoint(
@@ -37,6 +39,9 @@ def checkpoint(container_id):
         "Size of checkpoint: "
         f"{checkpoint_size_bytes / (1024 * 1024):.2f} MB"
     )
+
+    for volume_id in volumes:
+        podman_client.remove_volume(volume_id)
 
     return checkpoint_path
 
