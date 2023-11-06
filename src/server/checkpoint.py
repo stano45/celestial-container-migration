@@ -1,12 +1,12 @@
 import os
 import time
-from src.server.config import (
+from server.config import (
     CHECKPOINT_DIR,
     CHECKPOINT_NAME,
 )
-from src.server.podman_client import PodmanClient
+from server.podman_client import PodmanClient
 
-from src.server.utils import (
+from server.utils import (
     get_file_size,
 )
 

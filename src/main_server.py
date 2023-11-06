@@ -1,10 +1,10 @@
-from src.server.checkpoint import checkpoint
+from server.checkpoint import checkpoint
 from flask import Flask, request, jsonify, send_file
 from requests import RequestException
 import requests
-from src.server.config import CHECKPOINT_NAME
+from server.config import CHECKPOINT_NAME
 
-from src.server.restore import restore
+from server.restore import restore
 
 app = Flask(__name__)
 
@@ -35,6 +35,14 @@ def migrate(container_id):
     print(f"Checkpoint created {checkpoint_path}")
     print(f"Returning container {container_id}.")
     return send_file(checkpoint_path, mimetype="application/gzip")
+
+
+@app.route("/health", methods=["GET"])
+def health_check():
+    """
+    Health check endpoint returning the status of the server.
+    """
+    return jsonify({"status": "UP", "message": "Service is healthy"}), 200
 
 
 def get_checkpoint_file(host, container_id):

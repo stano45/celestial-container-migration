@@ -1,6 +1,6 @@
 import time
-from src.server.config import REMOVE_OLD_CONTAINER
-from src.server.podman_client import PodmanClient
+from server.config import REMOVE_OLD_CONTAINER
+from server.podman_client import PodmanClient
 
 
 def restore(container_name: str, checkpoint_file_path: str):

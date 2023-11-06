@@ -1,7 +1,7 @@
 import json
 import time
 
-from src.server.utils import run_command
+from server.utils import run_command
 
 
 class PodmanClient:
