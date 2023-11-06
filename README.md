@@ -13,10 +13,12 @@ This guide will walk you through setting up a virtual environment, installing th
 ### Prerequisites
 
 Before you begin, ensure you have the following dependencies:
-- CRIU
-- Python 3.x
+- [`podman 3.4.2+`](https://podman.io/docs/installation#ubuntu)
+- [`CRIU 3.18+`](https://criu.org/Installation)
+- `Python 3.x`
 - `pip` (Python package manager)
 
+*Please note that this project has only been tested on Ubuntu 20 and 22.*
 
 
 ### Setting Up a Virtual Environment
@@ -67,3 +69,20 @@ migrate-container <source-ip> <target-ip> <container-id>
 
 Container ID can also be the name of the container.
 
+## Troubleshooting
+### Issues with installing podman on Ubuntu 20+ using the official instructions
+Run:
+```bash
+sudo apt-get update
+sudo apt-get install -y software-properties-common
+
+ubuntu_version=$(lsb_release -rs)
+
+sudo sh -c "echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${ubuntu_version}/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list"
+
+wget -nv "https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_${ubuntu_version}/Release.key" -O Release.key
+
+
+sudo apt-key add - < Release.key
+sudo apt-get update -qq
+sudo apt-get -qq -y install podman
