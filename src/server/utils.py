@@ -1,3 +1,4 @@
+import os
 import subprocess
 
 
@@ -13,8 +14,6 @@ def run_command(command, ignore_error=False):
     return result.stdout.strip()
 
 
-def get_directory_size(path):
-    """Returns the size of a directory in bytes."""
-    size_output = run_command(f"sudo du -sb {path}")
-    size_in_bytes, _ = size_output.split("\t", 1)
-    return int(size_in_bytes)
+def get_file_size(path):
+    """Returns the size of a file in bytes."""
+    return os.path.getsize(path)

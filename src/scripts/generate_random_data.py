@@ -1,15 +1,15 @@
 import json
 import os
-from config import (
+from src.server.config import (
     RANDOM_DATA_SIZE_MB,
     RANDOM_DATA_KEY_COUNT,
     RANDOM_DATA_JSON_PATH,
     RANDOM_DATA_VOLUME_NAME,
     TEMP_REDIS_CONTAINER_NAME,
 )
-from redis_client import RedisClient
+from scripts.redis_client import RedisClient
 from docker_client import DockerClient
-from utils import (
+from src.server.utils import (
     run_command,
 )
 
