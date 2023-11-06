@@ -31,7 +31,7 @@ def send_container_migration_request(source_ip, target_ip, container_name):
         print(f"Error sending migration request to target: {e}")
 
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) != 4:
         print(
             "Usage: python request_container.py "
@@ -44,3 +44,7 @@ if __name__ == "__main__":
     container_name = sys.argv[3]
 
     send_container_migration_request(source_ip, target_ip, container_name)
+
+
+if __name__ == "__main__":
+    main()

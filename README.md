@@ -8,7 +8,7 @@ The server exposes two endpoints, `/start_migration` and `/container/<container_
 
 ## Getting Started
 
-This guide will walk you through setting up a virtual environment, installing the package, and running the `start-server` script.
+This guide will walk you through setting up a virtual environment, installing the package, and running the `start-server` and `migrate-container` scripts.
 
 ### Prerequisites
 
@@ -57,3 +57,13 @@ start-server
 ```
 
 This should start the server, and you will see output indicating that the server is running.
+
+
+When the server is running on both the source and target VM, you can initiate container migration with the following command:
+
+```bash
+migrate-container <source-ip> <target-ip> <container-id>
+```
+
+Container ID can also be the name of the container.
+
