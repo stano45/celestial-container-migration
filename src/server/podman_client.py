@@ -73,4 +73,4 @@ class PodmanClient:
 
     def remove_volume(self, volume_id):
         print(f"Removing volume {volume_id}...")
-        run_command(f"podman volume rm {volume_id}", ignore_error=True)
+        run_command(f"podman volume rm -f {volume_id}", ignore_error=True)

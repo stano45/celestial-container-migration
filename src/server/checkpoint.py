@@ -12,7 +12,6 @@ from server.utils import (
 
 
 def checkpoint(container_id):
-    # -----------------------------SETUP------------------------------------
     podman_client = PodmanClient()
 
     checkpoint_dir = os.path.expanduser(CHECKPOINT_DIR)
@@ -20,6 +19,7 @@ def checkpoint(container_id):
     checkpoint_path = os.path.join(checkpoint_dir, checkpoint_name)
     os.makedirs(os.path.join(checkpoint_dir), exist_ok=True)
 
+    # Get all volumes mounted by the container before checkpointing
     volumes = podman_client.get_volume_ids_of_container(container_id)
 
     checkpoint_start_time = time.time()
@@ -40,6 +40,12 @@ def checkpoint(container_id):
         f"{checkpoint_size_bytes / (1024 * 1024):.2f} MB"
     )
 
+    # The container should not be present after checkpointing
+    # but we still try to remove it just in case (ignore errors)
+    podman_client.remove_container(container_id)
+
+    # Remove the volumes created by the container,
+    # otherwise we cannot start it again on this machine
     for volume_id in volumes:
         podman_client.remove_volume(volume_id)
 
