@@ -164,3 +164,7 @@ dump.rdb
 
 podman-checkpoint*
 Release.key
+
+# Exclude filesystems and kernels
+/firecracker/*.ext4
+/firecracker/vmlinux*
