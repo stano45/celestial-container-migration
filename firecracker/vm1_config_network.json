@@ -1,6 +1,6 @@
 {
   "boot-source": {
-    "kernel_image_path": "vmlinux-5.15.138",
+    "kernel_image_path": "vmlinux.bin",
     "boot_args": "console=ttyS0 reboot=k panic=1 pci=off",
     "initrd_path": null
   },

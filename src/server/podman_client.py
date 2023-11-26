@@ -15,9 +15,7 @@ class PodmanClient:
         print(f"Running container {container_name}")
         run_container_start_time = time.time()
 
-        container_id = run_command(
-            "podman run -d --runtime runc --name redis redis:alpine"
-        )
+        container_id = run_command("podman run -d --name redis redis:alpine")
 
         run_container_duration = time.time() - run_container_start_time
         print(
