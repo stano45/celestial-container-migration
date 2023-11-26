@@ -2,7 +2,7 @@
 
 ## About 
 
-This project is a proof-of-concept for migrating [podman](https://podman.io) containers between hosts using the [CRIU](https://criu.org) for checkpoint/restore.
+This project is a proof-of-concept for migrating [podman](https://podman.io) containers between hosts using [CRIU](https://criu.org) for checkpoint/restore.
 
 There are two servers, `sat-server` and `gst-server`, which run on satellites and ground stations respectively. The satellite server is responsible for managing containers and their migration on a single satellite. 
 The ground station server is responsible for orchestrating the container migration, based on satellite positions relative to the ground station. 
