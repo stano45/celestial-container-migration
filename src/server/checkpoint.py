@@ -1,12 +1,8 @@
-import os
 import time
-from server.config import (
-    CHECKPOINT_DIR,
-    CHECKPOINT_NAME,
-)
 from server.podman_client import PodmanClient
 
 from server.utils import (
+    get_checkpoint_path,
     get_file_size,
 )
 
@@ -14,10 +10,7 @@ from server.utils import (
 def checkpoint(container_id):
     podman_client = PodmanClient()
 
-    checkpoint_dir = os.path.expanduser(CHECKPOINT_DIR)
-    checkpoint_name = f"{CHECKPOINT_NAME}-{container_id}.tar.gz"
-    checkpoint_path = os.path.join(checkpoint_dir, checkpoint_name)
-    os.makedirs(os.path.join(checkpoint_dir), exist_ok=True)
+    checkpoint_path = get_checkpoint_path(container_id)
 
     # Get all volumes mounted by the container before checkpointing
     volumes = podman_client.get_volume_ids_of_container(container_id)

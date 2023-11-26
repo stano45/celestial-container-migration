@@ -1,6 +1,8 @@
 import os
 import subprocess
 
+from server.config import CHECKPOINT_DIR, CHECKPOINT_NAME
+
 
 def run_command(command, ignore_error=False):
     """Execute the command and return its output."""
@@ -17,3 +19,8 @@ def run_command(command, ignore_error=False):
 def get_file_size(path):
     """Returns the size of a file in bytes."""
     return os.path.getsize(path)
+
+
+def get_checkpoint_path(container_id):
+    checkpoint_name = f"{CHECKPOINT_NAME}-{container_id}.tar.gz"
+    return os.path.join(CHECKPOINT_DIR, checkpoint_name)

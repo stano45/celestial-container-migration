@@ -167,4 +167,5 @@ Release.key
 
 # Exclude filesystems and kernels
 /firecracker/*.ext4
+/firecracker/*.img
 /firecracker/vmlinux*

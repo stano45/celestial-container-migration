@@ -3,10 +3,9 @@ from server.podman_client import PodmanClient
 from flask import Flask, request, jsonify, send_file
 from requests import RequestException
 import requests
-from server.config import CHECKPOINT_NAME
 
 from server.restore import restore
-from server.utils import run_command
+from server.utils import get_checkpoint_path, run_command
 
 app = Flask(__name__)
 
@@ -19,10 +18,17 @@ def start_migration():
 
     try:
         print(f"Fetching container {container_name}...")
+        url = f"http://{server_ip}:8000/containers/{container_name}"
 
-        file_path = get_checkpoint_file(
-            host=server_ip, container_id=container_name
-        )
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+
+        # Save the file
+        file_path = get_checkpoint_path(container_name)
+        with open(file_path, "wb") as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+
         print(f"Checkpoint saved at {file_path}")
         restore(container_name=container_name, checkpoint_file_path=file_path)
         return jsonify({"status": "success"}), 200
@@ -168,22 +174,6 @@ def health_check():
     Health check endpoint returning the status of the server.
     """
     return jsonify({"status": "UP", "message": "Service is healthy"}), 200
-
-
-def get_checkpoint_file(host, container_id):
-    url = f"http://{host}:8000/containers/{container_id}"
-
-    response = requests.get(url, stream=True)
-    response.raise_for_status()
-
-    # Save the file
-    checkpoint_name = f"{CHECKPOINT_NAME}-{container_id}"
-    file_path = f"{checkpoint_name}.tar.gz"
-    with open(file_path, "wb") as f:
-        for chunk in response.iter_content(chunk_size=8192):
-            f.write(chunk)
-
-    return file_path
 
 
 def main():

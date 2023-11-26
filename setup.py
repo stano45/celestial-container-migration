@@ -5,7 +5,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="celestial-container-migration",
-    version="0.3.0",
+    version="0.4.0",
     packages=find_packages(where="src"),
     py_modules=["main_server", "migrate_container"],
     install_requires=requirements,

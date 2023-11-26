@@ -7,10 +7,10 @@
   "drives": [
     {
       "drive_id": "rootfs",
-      "path_on_host": "migration.ext4",
+      "path_on_host": "migration.img",
       "is_root_device": true,
       "partuuid": null,
-      "is_read_only": false,
+      "is_read_only": true,
       "cache_type": "Unsafe",
       "io_engine": "Sync",
       "rate_limiter": null
