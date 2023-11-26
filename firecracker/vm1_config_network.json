@@ -7,7 +7,7 @@
   "drives": [
     {
       "drive_id": "rootfs",
-      "path_on_host": "migration.img",
+      "path_on_host": "sat.img",
       "is_root_device": true,
       "partuuid": null,
       "is_read_only": true,

@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-from server.config import CHECKPOINT_DIR, CHECKPOINT_NAME
+from config import CHECKPOINT_DIR, CHECKPOINT_NAME
 
 
 def run_command(command, ignore_error=False):

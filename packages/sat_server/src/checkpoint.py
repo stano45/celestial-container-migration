@@ -1,7 +1,7 @@
 import time
-from server.podman_client import PodmanClient
+from podman_client import PodmanClient
 
-from server.utils import (
+from utils import (
     get_checkpoint_path,
     get_file_size,
 )

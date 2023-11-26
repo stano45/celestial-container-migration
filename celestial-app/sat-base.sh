@@ -59,8 +59,8 @@ podman -v
 printf "\nInstalling migration server...\n"
 python3 -m venv .server-venv
 source .server-venv/bin/activate
-pip install /celestial_container_migration-0.4.0-py3-none-any.whl
-rm celestial_container_migration-0.4.0-py3-none-any.whl
+pip install /celestial_container_migration_sat_server-0.5.0-py3-none-any.whl
+rm /celestial_container_migration_sat_server-0.5.0-py3-none-any.whl
 
 # echo "nameserver 8.8.8.8" | tee -a /etc/resolv.conf
 

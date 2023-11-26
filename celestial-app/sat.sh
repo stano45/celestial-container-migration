@@ -29,11 +29,11 @@ echo nameserver "$IP" > /etc/resolv.conf
 # ip link set eth0 up
 # ip route add default via 172.16.0.1 dev eth0
 # # Add the google DNS server
-# echo "nameserver 8.8.8.8" | tee -a /etc/resolv.conf
+# # echo "nameserver 8.8.8.8" | tee -a /etc/resolv.conf
 
-mount -t tmpfs -o size=512M tmpfs /var
-mount -t tmpfs -o size=512M tmpfs /tmp
-mkdir /var/tmp
+# mount -t tmpfs -o size=512M tmpfs /var
+# mount -t tmpfs -o size=512M tmpfs /tmp
+# mkdir /var/tmp
 
 #Pull the redis alpine image
 podman load -i redis-alpine.tar.gz

@@ -1,11 +1,11 @@
-from server.checkpoint import checkpoint
-from server.podman_client import PodmanClient
+from checkpoint import checkpoint
+from podman_client import PodmanClient
 from flask import Flask, request, jsonify, send_file
 from requests import RequestException
 import requests
 
-from server.restore import restore
-from server.utils import get_checkpoint_path, run_command
+from restore import restore
+from utils import get_checkpoint_path, run_command
 
 app = Flask(__name__)
 

@@ -1,18 +1,27 @@
 from setuptools import setup, find_packages
 
-with open("requirements.txt") as f:
-    requirements = f.read().splitlines()
+# with open("./requirements.txt") as f:
+#     requirements = f.read().splitlines()
 
 setup(
-    name="celestial-container-migration",
-    version="0.4.0",
+    name="celestial-container-migration-scripts",
+    version="0.5.0",
     packages=find_packages(where="src"),
-    py_modules=["main_server", "migrate_container"],
-    install_requires=requirements,
+    # install_requires=requirements,
+    py_modules=[
+        "generate_random_data",
+        "get_redis",
+        "migrate_container",
+        "redis_client",
+        "remove_container",
+        "remove_volume",
+        "set_redis",
+        "start_container",
+        "stop_container",
+    ],
     package_dir={"": "src"},
     entry_points={
         "console_scripts": [
-            "start-server=main_server:main",
             "migrate-container=scripts.migrate_container:main",
             "start-container=scripts.start_container:main",
             "stop-container=scripts.stop_container:main",
