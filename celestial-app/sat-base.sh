@@ -56,7 +56,7 @@ apk add podman tar runc
 mv containers.conf /etc/containers/containers.conf
 podman -v
 
-printf "\nInstalling migration server...\n"
+printf "\nInstalling satellite server...\n"
 python3 -m venv .server-venv
 source .server-venv/bin/activate
 pip install /celestial_container_migration_sat_server-0.5.0-py3-none-any.whl
