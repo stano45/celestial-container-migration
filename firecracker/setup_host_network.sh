@@ -29,5 +29,3 @@ sudo ip link set tap1 up
 # Setup iptables to allow forwarding from tap0, tap1 to the internet
 sudo iptables -A FORWARD -i tap0 -o wlp7s0 -j ACCEPT
 sudo iptables -A FORWARD -i tap1 -o wlp7s0 -j ACCEPT
-
-ip a

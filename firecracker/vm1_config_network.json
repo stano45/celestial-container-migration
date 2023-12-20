@@ -1,7 +1,7 @@
 {
   "boot-source": {
     "kernel_image_path": "vmlinux.bin",
-    "boot_args": "console=ttyS0 reboot=k panic=1 pci=off",
+    "boot_args": "init=/sbin/ceinit ro console=ttyS0 noapic reboot=k panic=1 random.trust_cpu=on pci=off tsc=reliable quiet ipv6.disable=1 nomodule overlay_root=vdb",
     "initrd_path": null
   },
   "drives": [
@@ -11,6 +11,16 @@
       "is_root_device": true,
       "partuuid": null,
       "is_read_only": true,
+      "cache_type": "Unsafe",
+      "io_engine": "Sync",
+      "rate_limiter": null
+    },
+    {
+      "drive_id": "overlay",
+      "path_on_host": "overlay1.ext4",
+      "is_root_device": false,
+      "partuuid": null,
+      "is_read_only": false,
       "cache_type": "Unsafe",
       "io_engine": "Sync",
       "rate_limiter": null

@@ -39,7 +39,7 @@ def get_active_sats(shells: int, gateway: str) -> typing.List[typing.Dict]:
             response = requests.get("http://%s/shell/%d" % (gateway, s))
             data = response.json()
 
-            active.extend(data["activeSats"])
+            active.extend(data)
 
         return active
     except Exception as e:

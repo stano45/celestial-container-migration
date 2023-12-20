@@ -3,8 +3,8 @@ model = "SGP4"
 bbox = [47.2196, 6.0205, 57.7610, 15.2490]
 interval = 1
 animation = false
-hosts = ["192.168.10.3:1969", "192.168.10.4:1969"]
-peeringhosts = ["192.168.10.3:1970", "192.168.10.4:1970"]
+hosts = ["192.168.10.3:1969"]
+peeringhosts = ["192.168.10.3:1970"]
 database = true
 dbhost = "192.168.10.2:8000"
 
@@ -22,22 +22,22 @@ groundstationconnectiontype = "all"
 [computeparams]
 vcpu_count = 1
 mem_size_mib = 512
-disk_size_mib = 10
+disk_size_mib = 100
 ht_enabled = false
 bootparams = "random.trust_cpu=on"
 kernel = "vmlinux.bin"
-rootfs = "migration.img"
+rootfs = "sat.img"
 
 [[shell]]
-planes = 72
-sats = 22
+planes = 2
+sats = 2
 altitude = 550
 inclination = 53.0
 arcofascendingnodes = 360.0
 eccentricity = 0.0
 
 [[groundstation]]
-name = "master"
+name = "gst"
 lat = 52.514182
 long = 13.328285
 
@@ -45,4 +45,4 @@ long = 13.328285
 vcpu_count = 4
 mem_size_mib = 4096
 disk_size_mib = 100
-rootfs = "master.img"
+rootfs = "gst.img"
