@@ -5,11 +5,11 @@ with open("./requirements.txt") as f:
 
 setup(
     name="celestial-container-migration-sat-server",
-    version="0.5.0",
+    version="0.6.0",
     packages=find_packages(where="src"),
     install_requires=requirements,
     py_modules=[
-        "server",
+        "sat_server",
         "checkpoint",
         "restore",
         "utils",
@@ -18,6 +18,6 @@ setup(
     ],
     package_dir={"": "src"},
     entry_points={
-        "console_scripts": ["start-sat-server=server:main"],
+        "console_scripts": ["start-sat-server=sat_server:main"],
     },
 )

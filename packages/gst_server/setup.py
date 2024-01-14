@@ -5,14 +5,14 @@ with open("./requirements.txt") as f:
 
 setup(
     name="celestial-container-migration-gst-server",
-    version="0.5.0",
+    version="0.6.0",
     packages=find_packages(where="src"),
     install_requires=requirements,
     py_modules=[
-        "server",
+        "gst_server",
     ],
     package_dir={"": "src"},
     entry_points={
-        "console_scripts": ["start-gst-server=server:main"],
+        "console_scripts": ["start-gst-server=gst_server:main"],
     },
 )

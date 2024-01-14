@@ -1,10 +1,10 @@
 model = "SGP4"
 #35.000000, -15.000000, 65.000000, 35.000000
-bbox = [47.2196, 6.0205, 57.7610, 15.2490]
+bbox = [35.000000, -15.000000, 65.000000, 35.000000]
 interval = 1
 animation = false
-hosts = ["192.168.10.3:1969"]
-peeringhosts = ["192.168.10.3:1970"]
+hosts = ["192.168.10.3:1969", "192.168.10.4:1969"]
+peeringhosts = ["192.168.10.3:1970", "192.168.10.4:1970"]
 database = true
 dbhost = "192.168.10.2:8000"
 
@@ -29,15 +29,15 @@ kernel = "vmlinux.bin"
 rootfs = "sat.img"
 
 [[shell]]
-planes = 2
-sats = 2
+planes = 1
+sats = 70
 altitude = 550
-inclination = 53.0
+inclination = 75.0
 arcofascendingnodes = 360.0
 eccentricity = 0.0
 
 [[groundstation]]
-name = "gst"
+name = "berlin"
 lat = 52.514182
 long = 13.328285
 

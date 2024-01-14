@@ -1,1 +1,0 @@
-gcloud compute ssh --zone="europe-west3-c" "celestial-host-1"

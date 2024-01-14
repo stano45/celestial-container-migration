@@ -21,13 +21,11 @@
 # filesystem compilation
 
 
-printf "\n---\nRunning base script.\n---\n"
+printf "\n---\nRunning sat img base script.\n---\n"
 
 rc-update add cgroups boot
 
-apk add criu
-
-# Install build dependencies
+# Build dependencies
 printf "\nInstalling build dependencies...\n"
 apk add git musl libstdc++ alpine-sdk build-base gcompat make python3 py3-pip py3-virtualenv py3-wheel
 
@@ -44,7 +42,7 @@ apk add asciidoc xmlto
 printf "\nInstalling CRIU...\n"
 git clone https://github.com/checkpoint-restore/criu.git
 cd criu
-make install -j$(nproc)
+make criu -j$(nproc)
 cp ./criu/criu /sbin
 criu --version || exit 1
 cd ..
@@ -52,19 +50,13 @@ rm -rf criu
 
 # Podman
 printf "\nInstalling Podman...\n"
-# apk add podman tar runc fuse-overlayfs
 apk add podman tar runc
 mv containers.conf /etc/containers/containers.conf
-# mv storage.conf /etc/containers/storage.conf
 
 podman -v
 
 printf "\nInstalling satellite server...\n"
 python3 -m venv .server-venv
 source .server-venv/bin/activate
-pip install /celestial_container_migration_sat_server-0.5.0-py3-none-any.whl
-rm /celestial_container_migration_sat_server-0.5.0-py3-none-any.whl
-
-# echo "nameserver 8.8.8.8" | tee -a /etc/resolv.conf
-
-printf "\n---\nBase script finished!\n---\n"
+pip install /celestial_container_migration_sat_server-0.6.0-py3-none-any.whl
+rm /celestial_container_migration_sat_server-0.6.0-py3-none-any.whl
