@@ -110,8 +110,12 @@ def start_container(target_ip, container_name):
     try:
         response = requests.post(url, json=payload)
         logging.info(f"Response: {response.status_code}, {response.text}")
+        return response.text
     except requests.RequestException as e:
-        logging.error(f"Error: {e}")
+        logging.error(
+            f"Error starting container {container_name} on {target_ip}: {e}"
+        )
+        return None
 
 
 def send_container_migration_request(source_ip, target_ip, container_name):
@@ -139,6 +143,7 @@ def send_container_migration_request(source_ip, target_ip, container_name):
                 f"Migration failed with status code: {response.status_code}. "
                 f"Reason: {response.text}"
             )
+            return None
 
         checkpoint_duration_ms = response.json()["checkpoint_duration"]
         restore_duration_ms = response.json()["restore_duration"]
@@ -150,7 +155,6 @@ def send_container_migration_request(source_ip, target_ip, container_name):
 
     except requests.RequestException as e:
         logging.error(f"Error sending migration request to target: {e}")
-        return None
 
 
 def stop_container(target_ip, container_id):
@@ -194,8 +198,10 @@ def main():
         )
     gateway = sys.argv[1]
     logging.info(f"Hello from ground station! Gateway is {gateway}")
-    logging.info("Waiting 20sec for initialization")
-    time.sleep(20)
+
+    wait_seconds = 20
+    logging.info(f"Waiting {wait_seconds} seconds for initialization")
+    time.sleep(wait_seconds)
 
     self = get_self(gateway)
     logging.info(f"/self:\n{self}\n")
@@ -244,10 +250,21 @@ def main():
 
             if connected_sats is not None and connected_sats != []:
                 if current_sat is None:
-                    sat = connected_sats[0]["sat"]
+                    sat = None
+                    if len(connected_sats) == 1:
+                        sat = connected_sats[0]["sat"]
+                    else:
+                        # Choose the one with a larger ID
+                        sat = connected_sats[0]["sat"]
+                        for connected_sat in connected_sats:
+                            if connected_sat["sat"]["sat"] > sat["sat"]:
+                                sat = connected_sat["sat"]
                     sat_domain = build_sat_domain(sat)
                     logging.info(f"First host: {sat_domain}")
-                    start_container(sat_domain, "redis")
+                    response = start_container(sat_domain, "redis")
+                    if response is None:
+                        logging.error(f"Failed to start redis on {sat_domain}")
+                        continue
                     sat["domain"] = sat_domain
                     seen_sats[sat["sat"]] = sat
                     current_sat = sat
@@ -270,13 +287,17 @@ def main():
                             f"Sending migration request to "
                             f"{next_sat['domain']}"
                         )
+                        response = send_container_migration_request(
+                            current_sat["domain"], next_sat["domain"], "redis"
+                        )
+                        if response is None:
+                            logging.error(f"Migration failed for {next_sat}")
+                            continue
                         (
                             migration_duration_ms,
                             checkpoint_duration_ms,
                             restore_duration_ms,
-                        ) = send_container_migration_request(
-                            current_sat["domain"], next_sat["domain"], "redis"
-                        )
+                        ) = response
                         if migration_duration_ms is None:
                             logging.error(f"Migration failed for {next_sat}")
                             continue

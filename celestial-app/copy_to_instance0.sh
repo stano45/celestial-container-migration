@@ -29,7 +29,7 @@ gcloud compute ssh --zone="$GCP_REGION-$GCP_ZONE" $HOST_INSTANCE \
 gcloud compute ssh --zone="$GCP_REGION-$GCP_ZONE" $HOST_INSTANCE \
     --command "sudo reboot now"
 
-sleep 25
+sleep 20
 
 # Infinite loop to keep trying SSH every 5 seconds
 while true; do

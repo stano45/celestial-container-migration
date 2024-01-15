@@ -1,6 +1,5 @@
 model = "SGP4"
-#35.000000, -15.000000, 65.000000, 35.000000
-bbox = [35.000000, -15.000000, 65.000000, 35.000000]
+bbox = [45.0, 0.0, 60.0, 25.0]
 interval = 1
 animation = false
 hosts = ["192.168.10.3:1969", "192.168.10.4:1969"]
@@ -20,9 +19,9 @@ gstpropagation = 3.336e-6
 groundstationconnectiontype = "all"
 
 [computeparams]
-vcpu_count = 1
-mem_size_mib = 512
-disk_size_mib = 100
+vcpu_count = 4
+mem_size_mib = 4096
+disk_size_mib = 1000
 ht_enabled = false
 bootparams = "random.trust_cpu=on"
 kernel = "vmlinux.bin"
