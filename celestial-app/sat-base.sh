@@ -27,7 +27,7 @@ rc-update add cgroups boot
 
 # Build dependencies
 printf "\nInstalling build dependencies...\n"
-apk add git musl libstdc++ alpine-sdk build-base gcompat make python3 py3-pip py3-virtualenv py3-wheel
+apk add git build-base make python3 py3-pip py3-virtualenv py3-wheel
 
 # Proto libs for CRIU
 printf "\nInstalling proto libs for CRIU...\n"
@@ -35,12 +35,12 @@ apk add protobuf protobuf-c protobuf-c-dev protobuf-dev protoc
 
 # CRIU deps
 printf "\nInstalling CRIU dependencies...\n"
-apk add pkgconfig py-ipaddress libbsd-dev iproute2 nftables nftables-dev libcap-dev libnet libnet-dev libnl3 libnl3-dev libaio-dev gnutls-dev py3-future libdrm-dev libbsd-dev libc-dev
-apk add asciidoc xmlto
+apk add pkgconfig libbsd-dev iproute2 nftables nftables-dev libcap-dev libnet libnet-dev libnl3 libnl3-dev gnutls-dev libbsd-dev
 
 # CRIU
 printf "\nInstalling CRIU...\n"
-git clone https://github.com/checkpoint-restore/criu.git
+git config --global advice.detachedHead false
+git clone --depth 1 --branch v3.19 https://github.com/checkpoint-restore/criu.git
 cd criu
 make criu -j$(nproc)
 cp ./criu/criu /sbin
@@ -53,7 +53,6 @@ printf "\nInstalling Podman...\n"
 apk add podman tar runc
 mv containers.conf /etc/containers/containers.conf
 
-podman -v
 
 printf "\nInstalling satellite server...\n"
 python3 -m venv .server-venv

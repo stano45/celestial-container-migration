@@ -193,11 +193,11 @@ def build_sat_domain(sat):
 def main():
     if len(sys.argv) != 2:
         exit(
-            "Usage: python3 server.py [gateway] \n   "
+            "Usage: python3 gst_server.py [gateway] \n   "
             "OR: start-gst-server [gateway]"
         )
     gateway = sys.argv[1]
-    logging.info(f"Hello from ground station! Gateway is {gateway}")
+    logging.info(f"Hello from ground station server! Gateway is {gateway}")
 
     wait_seconds = 20
     logging.info(f"Waiting {wait_seconds} seconds for initialization")

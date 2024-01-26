@@ -7,7 +7,7 @@
   "drives": [
     {
       "drive_id": "rootfs",
-      "path_on_host": "sat.img",
+      "path_on_host": "../celestial-app/sat.img",
       "is_root_device": true,
       "partuuid": null,
       "is_read_only": true,
@@ -17,7 +17,7 @@
     },
     {
       "drive_id": "overlay",
-      "path_on_host": "overlay1.ext4",
+      "path_on_host": "overlay.ext4",
       "is_root_device": false,
       "partuuid": null,
       "is_read_only": false,

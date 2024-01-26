@@ -1,7 +1,8 @@
 import os
 import subprocess
 
-from config import CHECKPOINT_DIR, CHECKPOINT_NAME
+CHECKPOINT_DIR = "/tmp"
+CHECKPOINT_NAME = "podman-checkpoint"
 
 
 def run_command(command, ignore_error=False):
