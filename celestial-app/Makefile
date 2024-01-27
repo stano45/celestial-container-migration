@@ -18,9 +18,15 @@ SHELL := /bin/bash
 
 .PHONY: all sat gst
 
-all: satserver gstserver satimg gstimg
-sat: satserver satimg
-gst: gstserver gstimg
+all: sat gst
+sat: cleansat satserver satimg
+gst: cleangst gstserver gstimg
+
+cleansat:
+	rm -rf ~/celestial-container-migration/celestial-app/sat.img ~/celestial-container-migration/celestial-app/celestial_container_migration_sat_server*.whl
+
+cleangst:
+	rm -rf ~/celestial-container-migration/celestial-app/gst.img ~/celestial-container-migration/celestial-app/celestial_container_migration_gst_server*.whl
 
 satserver:
 	cd ~/celestial-container-migration/packages/sat_server && \

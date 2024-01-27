@@ -35,7 +35,7 @@ class PodmanClient:
             f"in {run_container_duration:.2f} milliseconds"
         )
 
-    def __restore_checkpoint(self, checkpoint_path, print_stats=True):
+    def _restore_checkpoint(self, checkpoint_path, print_stats=True):
         logging.info(
             f"Starting container from checkpoint {checkpoint_path}..."
         )
@@ -60,16 +60,16 @@ class PodmanClient:
 
         restore_start_time = time.time()
 
-        self.__restore_checkpoint(checkpoint_path=checkpoint_path)
+        self._restore_checkpoint(checkpoint_path=checkpoint_path)
 
         restore_duration = time.time() - restore_start_time
         print(f"Restore time: {restore_duration:.2f} seconds")
 
-    def __checkpoint_container(
+    def _checkpoint_container(
         self, container_id, checkpoint_path, print_stats=True
     ):
         logging.info(
-            f"Checkpointing container {container_id} to {checkpoint_path}..."
+            f"Checkpointing container {container_id=} to {checkpoint_path=}..."
         )
         stats = run_command(
             f"podman container checkpoint {container_id} "
@@ -89,7 +89,7 @@ class PodmanClient:
 
         checkpoint_start_time = time.time()
 
-        self.__checkpoint_container(
+        self._checkpoint_container(
             container_id=container_id, checkpoint_path=checkpoint_path
         )
 
