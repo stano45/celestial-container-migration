@@ -118,7 +118,7 @@ def json_to_csv_line(t, source_sat, target_sat, json_data):
         f"{runtime_restore_duration},"
         f"{forking_time},"
         f"{pages_restored},"
-        f"{restore_time}"
+        f"{restore_time}\n"
     )
     return csv_line
 
@@ -375,19 +375,21 @@ def test_migration(gateway, period_seconds=5):
                 logging.error(f"Migration failed for {next_sat}")
                 continue
 
-            # Update current_sat and notify client
-            current_sat = next_sat
+            # Notify client of migration
             notify_client_retry("client.gst.celestial", sat_domain)
 
             # Write migration stats to file
             csv_line = json_to_csv_line(
                 time.time(),
-                current_sat["sat"],
-                next_sat["sat"],
+                current_sat["domain"],
+                next_sat["domain"],
                 response,
             )
             f.write(csv_line)
             f.flush()
+
+            # Update current_sat
+            current_sat = next_sat
 
 
 def main():
