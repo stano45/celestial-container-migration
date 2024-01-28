@@ -1,12 +1,14 @@
-# copy image and binary to hosts
-# adapt this if you change the name or amount of hosts
+#!/bin/bash
+
+# Assign the first argument to INSTANCE_INDEX
+INSTANCE_INDEX=$1
 
 GCP_REGION="europe-west3"
 GCP_ZONE="a"
-HOST_INSTANCE="celestial-host-0"
+HOST_INSTANCE="celestial-host-$INSTANCE_INDEX"
 CELESTIAL_PATH="/home/stanley/celestial"
 
-
+# Copy binary and images to the specific host instance
 gcloud compute scp --zone="$GCP_REGION-$GCP_ZONE" \
     $CELESTIAL_PATH/celestial.bin $HOST_INSTANCE:.
 gcloud compute scp --zone="$GCP_REGION-$GCP_ZONE" \
@@ -14,18 +16,21 @@ gcloud compute scp --zone="$GCP_REGION-$GCP_ZONE" \
 gcloud compute scp --zone="$GCP_REGION-$GCP_ZONE" \
     ~/celestial-container-migration/celestial-app/gst.img $HOST_INSTANCE:.
 gcloud compute scp --zone="$GCP_REGION-$GCP_ZONE" \
+    ~/celestial-container-migration/celestial-app/client.img $HOST_INSTANCE:.
+gcloud compute scp --zone="$GCP_REGION-$GCP_ZONE" \
     ~/celestial-container-migration/firecracker/vmlinux.bin $HOST_INSTANCE:.
 
+# Move the files to their respective directories on the host
 gcloud compute ssh --zone="$GCP_REGION-$GCP_ZONE" $HOST_INSTANCE \
     --command "sudo mv sat.img /celestial/sat.img"
 gcloud compute ssh --zone="$GCP_REGION-$GCP_ZONE" $HOST_INSTANCE \
     --command "sudo mv gst.img /celestial/gst.img"
 gcloud compute ssh --zone="$GCP_REGION-$GCP_ZONE" $HOST_INSTANCE \
+    --command "sudo mv client.img /celestial/client.img"
+gcloud compute ssh --zone="$GCP_REGION-$GCP_ZONE" $HOST_INSTANCE \
     --command "sudo mv vmlinux.bin /celestial/vmlinux.bin"
 
-# before we start, we need to reboot our hosts once
-# the reason is that we need to adapt file descriptor limits, which we do
-# with terraform during setup but which requires a reboot after
+# Reboot the host
 gcloud compute ssh --zone="$GCP_REGION-$GCP_ZONE" $HOST_INSTANCE \
     --command "sudo reboot now"
 
@@ -36,5 +41,5 @@ while true; do
     sleep 5
 
     gcloud compute ssh --zone="$GCP_REGION-$GCP_ZONE" $HOST_INSTANCE \
-    --command "sudo systemctl stop systemd-resolved ; sudo ./celestial.bin"
+        --command "sudo systemctl stop systemd-resolved ; sudo ./celestial.bin"
 done

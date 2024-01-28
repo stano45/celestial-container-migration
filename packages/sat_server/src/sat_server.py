@@ -137,7 +137,7 @@ def migrate(container_id):
     logging.info(
         f"Checkpoint created {checkpoint_path} of container {container_id} "
         f"in {duration_micro:.2f}µs "
-        f"({(duration_micro*1000000):2f}s ). Sending checkpoint..."
+        f"({(duration_micro/1000000):2f}s ). Sending checkpoint..."
     )
 
     response = make_response(

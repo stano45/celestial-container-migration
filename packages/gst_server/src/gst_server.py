@@ -213,7 +213,7 @@ def send_container_migration_request(source_ip, target_ip, container_name):
             logging.info(
                 f"Migration completed successfully in "
                 f"{migration_duration_us:.2f}µs"
-                f"({migration_duration_us * 1000000:.2f} s)."
+                f"({migration_duration_us / 1000000:.2f} s)."
             )
         else:
             logging.error(
@@ -258,7 +258,7 @@ def send_container_migration_request(source_ip, target_ip, container_name):
 
 
 def notify_client(client_ip, target_ip):
-    url = f"http://{client_ip}/notify"
+    url = f"http://{client_ip}:8000/notify"
     payload = {"host": target_ip}
 
     try:

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 cd ~/celestial
 COORDINATOR_INSTANCE="celestial-coordinator"
 GCP_REGION="europe-west3"

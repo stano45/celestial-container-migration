@@ -2,8 +2,6 @@ import logging
 import random
 import sys
 import threading
-import typing
-import requests
 import time
 from flask import Flask, request, has_request_context
 from redis_client import RedisClient
@@ -48,69 +46,6 @@ for handler in logging.getLogger().handlers:
     handler.setFormatter(formatter)
 
 app = Flask(__name__)
-
-
-def get_self(gateway: str) -> str:
-    try:
-        response = requests.get(f"http://{gateway}/self")
-        return response.json()
-    except Exception:
-        return ""
-
-
-def get_info(gateway: str):
-    try:
-        response = requests.get(f"http://{gateway}/info")
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return 0
-    except Exception as e:
-        logging.error(e)
-        return 0
-
-
-def get_shell(shell: int, gateway: str) -> typing.List[typing.Dict]:
-    active = []
-    try:
-        response = requests.get(f"http://{gateway}/shell/{shell}")
-        return response.json()
-    except Exception as e:
-        logging.error(e)
-    return active
-
-
-def get_gst(name: str, gateway: str):
-    try:
-        response = requests.get(f"http://{gateway}/gst/{name}")
-        return response.json()
-    except Exception as e:
-        logging.error(e)
-
-
-def get_sat(shell: int, sat: int, gateway: str):
-    try:
-        response = requests.get(f"http://{gateway}/shell/{shell}/{sat}")
-        return response.json()
-    except Exception as e:
-        logging.error(e)
-
-
-def get_path(source_shell, source_sat, target_shell, target_sat, gateway: str):
-    try:
-        response = requests.get(
-            f"http://{gateway}/path/{source_shell}"
-            f"/{source_sat}/{target_shell}/{target_sat}"
-        )
-        return response.json()
-    except Exception as e:
-        logging.error(e)
-
-
-def build_sat_domain(sat):
-    id = sat["sat"]
-    shell = sat["shell"]
-    return f"{id}.{shell}.celestial"
 
 
 # Global state
@@ -224,21 +159,11 @@ def main():
     gateway = sys.argv[1]
     logging.info(f"Hello from redis client! Gateway is {gateway}")
 
-    # self = get_self(gateway)
-    # logging.info(f"/self:\n{self}\n")
-
-    # info = get_info(gateway)
-    # logging.info(f"/info:\n{info}\n")
-
-    # shell_id = get_shell(0, gateway)
-    # logging.info(f"/shell/{0}:\n{shell_id}\n")
-
     # Start sending requests to redis
     threading.Thread(target=test_redis).start()
-    # test_redis(100)
 
-    # Start Flask app
-    app.run(port=5000)
+    # Expose notify endpoint
+    app.run(host="0.0.0.0", port=8000)
 
 
 if __name__ == "__main__":

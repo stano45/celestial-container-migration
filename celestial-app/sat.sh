@@ -14,7 +14,7 @@ podman load -i redis-alpine.tar.gz
 criu check --all
 
 source .server-venv/bin/activate
-# printf "Starting SAT server...\n"
-# start-sat-server
+printf "Starting SAT server...\n"
+start-sat-server
 # start shell
-/bin/sh
+# /bin/sh
