@@ -8,9 +8,7 @@ setup(
     version="0.6.0",
     packages=find_packages(where="src"),
     install_requires=requirements,
-    py_modules=[
-        "gst_client",
-    ],
+    py_modules=["gst_client", "redis_client"],
     package_dir={"": "src"},
     entry_points={
         "console_scripts": ["start-gst-client=gst_client:main"],

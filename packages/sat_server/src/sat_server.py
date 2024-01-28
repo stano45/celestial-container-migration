@@ -1,3 +1,5 @@
+import base64
+import json
 from podman_client import PodmanClient
 from requests import RequestException
 import requests
@@ -74,7 +76,21 @@ def start_migration():
         response = requests.get(url, stream=True)
         response.raise_for_status()
 
-        checkpoint_duration_ms = response.headers.get("X-Duration", "Unknown")
+        checkpoint_duration_micro = response.headers.get(
+            "X-Checkpoint-Duration", "Unknown"
+        )
+        encoded_stats = response.headers.get("X-Checkpoint-Stats")
+
+        checkpoint_stats = None
+        if encoded_stats:
+            # Decode the base64-encoded string
+            decoded_json_string = base64.b64decode(encoded_stats).decode(
+                "utf-8"
+            )
+
+            # Parse the JSON string to a Python dictionary
+            checkpoint_stats = json.loads(decoded_json_string)
+
         file_path = utils.get_checkpoint_path(container_name)
         with open(file_path, "wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
@@ -82,22 +98,25 @@ def start_migration():
         logging.info(f"Checkpoint saved at {file_path}")
 
         start = time.time()
-        podman_client.remove_old_and_restore_container(
+        restore_stats = podman_client.remove_old_and_restore_container(
             old_container_id=container_name, checkpoint_path=file_path
         )
-        restore_duration_ms = (time.time() - start) * 1000
+        restore_duration_micro = (time.time() - start) * 1000000
 
-        return (
-            jsonify(
-                {
-                    "status": "success",
-                    "message": "Migration completed successfully",
-                    "checkpoint_duration": checkpoint_duration_ms,
-                    "restore_duration": restore_duration_ms,
-                }
-            ),
-            200,
-        )
+        # Parsing restore_stats string to a dictionary
+        restore_stats_dict = json.loads(restore_stats)
+
+        # Merging restore_stats with the response data
+        response_data = {
+            "status": "success",
+            "message": "Migration completed successfully",
+            "checkpoint_duration": checkpoint_duration_micro,
+            "checkpoint_stats": checkpoint_stats,
+            "restore_duration": restore_duration_micro,
+            "restore_stats": restore_stats_dict,
+        }
+
+        return jsonify(response_data), 200
     except RequestException as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
@@ -108,21 +127,27 @@ def migrate(container_id):
 
     start_time = time.time()
 
-    checkpoint_path = podman_client.checkpoint_and_save_container(
-        container_id=container_id
-    )
+    (
+        checkpoint_path,
+        checkpoint_stats,
+    ) = podman_client.checkpoint_and_save_container(container_id=container_id)
 
-    duration_ms = (time.time() - start_time) * 1000
+    duration_micro = (time.time() - start_time) * 1000000
 
     logging.info(
         f"Checkpoint created {checkpoint_path} of container {container_id} "
-        f"in {duration_ms:.2f} milliseconds. Sending checkpoint..."
+        f"in {duration_micro:.2f}µs "
+        f"({(duration_micro*1000000):2f}s ). Sending checkpoint..."
     )
 
     response = make_response(
         send_file(checkpoint_path, mimetype="application/gzip")
     )
-    response.headers["X-Duration"] = str(duration_ms)
+    # Serialize and encode checkpoint_stats
+    encoded_stats = base64.b64encode(checkpoint_stats.encode()).decode()
+
+    response.headers["X-Checkpoint-Duration"] = str(duration_micro)
+    response.headers["X-Checkpoint-Stats"] = encoded_stats
     return response
 
 
@@ -153,9 +178,11 @@ def start_container():
             jsonify(
                 {
                     "status": "success",
-                    "message": f"Container {container_name} started"
-                    " successfully",
-                    "duration": duration_ms,
+                    "message": (
+                        f"Container {container_name} started successfully in "
+                        f"{duration_ms:.2f} ms"
+                    ),
+                    "duration_ms": duration_ms,
                 }
             ),
             200,

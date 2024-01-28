@@ -24,7 +24,8 @@ def main():
         "checkpoint_duration",
         "restore_duration",
     ]
-    df[duration_columns] = df[duration_columns] / 1000  # Convert ms to s
+    # TODO Stan
+    df[duration_columns] = df[duration_columns] / 1000000  # Convert µs to s
 
     # Plotting
     plt.figure(figsize=(15, 10))
@@ -35,7 +36,11 @@ def main():
 
         # Annotate durations and source-target pairs
         for i, (t, duration) in enumerate(zip(df["t"], df[column])):
-            annotation_text = f"{duration:.2f}s\n({df.loc[i, 'source_sat']},{df.loc[i, 'target_sat']})"
+            annotation_text = (
+                f"{duration:.2f}s\n"
+                f"({df.loc[i, 'source_sat']},"
+                f"{df.loc[i, 'target_sat']})"
+            )
             plt.annotate(
                 annotation_text,
                 (t, duration),

@@ -27,12 +27,12 @@ class PodmanClient:
             f"-p {host_port}:{container_port} {image_name}"
         )
 
-        run_container_duration = (
+        run_container_duration_ms = (
             time.time() - run_container_start_time
         ) * 1000
         logging.info(
             f"Container {container_name} started with id: {container_id} "
-            f"in {run_container_duration:.2f} milliseconds"
+            f"in {run_container_duration_ms:.2f} ms"
         )
 
     def _restore_checkpoint(self, checkpoint_path, print_stats=True):
@@ -42,16 +42,19 @@ class PodmanClient:
         try:
             stats = run_command(
                 f"podman container restore "
+                f"-i {checkpoint_path} "
                 f"{'--print-stats' if print_stats is True else ''} "
-                f"-i {checkpoint_path}"
+                f"--tcp-established "
             )
         except RuntimeError as e:
             logging.error(f"Error restoring checkpoint: {e}")
+            return None
         else:
             logging.info(
                 f"Container started successfully from path {checkpoint_path} "
                 f"with {stats=}"
             )
+            return stats
 
     def remove_old_and_restore_container(
         self, old_container_id, checkpoint_path
@@ -60,10 +63,14 @@ class PodmanClient:
 
         restore_start_time = time.time()
 
-        self._restore_checkpoint(checkpoint_path=checkpoint_path)
+        restore_stats = self._restore_checkpoint(
+            checkpoint_path=checkpoint_path
+        )
 
-        restore_duration = time.time() - restore_start_time
-        print(f"Restore time: {restore_duration:.2f} seconds")
+        restore_duration_ms = time.time() - restore_start_time
+        print(f"Restore time: {restore_duration_ms:.2f} ms")
+
+        return restore_stats
 
     def _checkpoint_container(
         self, container_id, checkpoint_path, print_stats=True
@@ -74,12 +81,14 @@ class PodmanClient:
         stats = run_command(
             f"podman container checkpoint {container_id} "
             f"-e={checkpoint_path} "
-            f"{'--print-stats' if print_stats is True else ''}"
+            f"{'--print-stats' if print_stats is True else ''} "
+            f"--tcp-established "
         )
         logging.info(
             f"Checkpoint created of {container_id=} at {checkpoint_path=} "
             f"with: {stats=}"
         )
+        return stats
 
     def checkpoint_and_save_container(self, container_id):
         checkpoint_path = get_checkpoint_path(container_id)
@@ -87,16 +96,8 @@ class PodmanClient:
         # Get all volumes mounted by the container before checkpointing
         volumes = self.get_volume_ids_of_container(container_id)
 
-        checkpoint_start_time = time.time()
-
-        self._checkpoint_container(
+        stats = self._checkpoint_container(
             container_id=container_id, checkpoint_path=checkpoint_path
-        )
-
-        checkpoint_duration = time.time() - checkpoint_start_time
-        logging.info(
-            f"Checkpoint created at {checkpoint_path} "
-            f"in {checkpoint_duration:.2f} seconds"
         )
 
         checkpoint_size_bytes = get_file_size(checkpoint_path)
@@ -114,7 +115,7 @@ class PodmanClient:
         for volume_id in volumes:
             self.remove_volume(volume_id)
 
-        return checkpoint_path
+        return checkpoint_path, stats
 
     def stop_container(self, container_id, ignore_error=False):
         logging.info(f"Stopping container {container_id}...")

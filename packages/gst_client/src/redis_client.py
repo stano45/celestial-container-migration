@@ -2,20 +2,39 @@ import random
 import string
 import redis
 from tqdm import tqdm
+import logging
 
 
 class RedisClient:
-    def __init__(self, host, port=6379, socket_timeout=5):
-        self.client = redis.Redis(
-            host=host,
-            port=port,
+    def __init__(self, host, port=6379, socket_timeout=1):
+        self.host = host
+        self.port = port
+        self.socket_timeout = socket_timeout
+        self.client = self._create_client()
+        self.disable_persistence()
+
+    def _create_client(self):
+        return redis.Redis(
+            host=self.host,
+            port=self.port,
             decode_responses=True,
-            socket_timeout=socket_timeout,
+            socket_timeout=self.socket_timeout,
         )
+
+    def reconnect(self, new_host):
+        if new_host != self.host:
+            self.host = new_host
+            self.client = self._create_client()
+            self.disable_persistence()
+            logging.info(f"Reconnected to new host: {self.host}")
+
+    def get_host(self):
+        return self.host
 
     def get(self, key):
         try:
-            self.client.get(key)
+            value = self.client.get(key)
+            return value
         except Exception as err:
             print(f"Error getting key {key}: {err=}, {type(err)=}")
             raise
@@ -46,6 +65,7 @@ class RedisClient:
     def disable_persistence(self):
         self.client.config_set("save", "")
         self.client.config_set("appendonly", "no")
+        logging.info(f"Persistence disabled for redis {self.host}")
 
     def write_data(self, keys_count, bytes_per_key):
         data = {}
