@@ -16,4 +16,4 @@ migrate-container $source_ip $destination_ip redis
 # Send a notification
 curl -X POST http://127.0.0.1:8000/notify \
     -H "Content-Type: application/json" \
-    -d "{\"sat\": \"$destination_ip\"}"
+    -d "{\"host\": \"$destination_ip\"}"

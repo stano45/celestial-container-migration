@@ -61,7 +61,9 @@ def notify():
         global redis_client
         try:
             if redis_client is None:
-                redis_client = RedisClient(host=current_sat)
+                redis_client = RedisClient(
+                    host=current_sat, socket_timeout=0.1
+                )
             else:
                 redis_client.reconnect(new_host=current_sat)
         except Exception as err:
@@ -105,18 +107,22 @@ def run_operation(op):
         known_key_values.pop(key, None)
 
 
-def test_redis(requests_per_second=1):
+def test_redis(requests_per_second=10):
+    global redis_client
+    global known_key_values
+
     logging.info(f"Starting redis client daemon with {requests_per_second=}")
+
+    while redis_client is None:
+        logging.info("Waiting for redis client to be set...")
+        time.sleep(1)
+
     operations = ["set", "get", "del"]
     request_interval = 1 / requests_per_second
     with open("client.csv", "w", newline="\n", encoding="utf-8") as f:
         f.write("t," "host," "operation," "status," "error," "latency\n")
         while True:
-            global redis_client
             time.sleep(request_interval)
-            # Skip if redis_client is not set
-            if redis_client is None:
-                continue
             logging.info(f"Using redis host {redis_client.get_host()}")
 
             op = random.choice(operations)

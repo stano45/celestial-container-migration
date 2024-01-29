@@ -169,3 +169,6 @@ Release.key
 *.ext4
 *.img
 *.bin
+
+# Exclude redis db dumps
+*.rdb

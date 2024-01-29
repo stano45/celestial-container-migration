@@ -18,13 +18,18 @@ class PodmanClient:
         image_name="redis:alpine",
         host_port=6379,
         container_port=6379,
+        host_rdb_path="./dump.rdb",
     ):
         logging.info(f"Running container {container_name}")
         run_container_start_time = time.time()
 
         container_id = run_command(
-            f"podman run -d --name {container_name} "
-            f"-p {host_port}:{container_port} {image_name}"
+            f"podman run "
+            f"--name {container_name} "
+            f"-d "
+            f"-p {host_port}:{container_port} "
+            f"-v {host_rdb_path}:/data/dump.rdb "
+            f"{image_name}"
         )
 
         run_container_duration_ms = (

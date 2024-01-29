@@ -87,6 +87,12 @@ class RedisClient:
                     "data and cloned container!"
                 )
 
+    def get_info(self):
+        return self.client.info()
+
+    def get_all_keys(self):
+        return self.client.keys()
+
     @staticmethod
     def _generate_random_string(bytes):
         """Generate a random string of given length."""
