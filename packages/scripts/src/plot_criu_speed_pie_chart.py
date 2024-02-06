@@ -1,7 +1,16 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import sys
 
-df = pd.read_csv("migration.csv")
+args = sys.argv
+if len(args) < 2:
+    print("Please provide the file name as an argument")
+    sys.exit(1)
+
+file_name = args[1]
+file_name_without_extension = file_name.split("/")[3].split(".")[0]
+
+df = pd.read_csv(filepath_or_buffer=file_name)
 
 
 # Function to extract the last part of the dot path
@@ -50,7 +59,7 @@ plt.pie(
     autopct="%1.1f%%",
 )
 plt.title("Checkpoint Phase Contribution")
-plt.savefig("checkpoint_phase_contribution.png")
+plt.savefig(f"checkpoint_phase_{file_name_without_extension}.png")
 
 plt.figure(figsize=(8, 8))
 plt.pie(
@@ -59,7 +68,7 @@ plt.pie(
     autopct="%1.1f%%",
 )
 plt.title("Restore Phase Contribution")
-plt.savefig("restore_phase_contribution.png")
+plt.savefig(f"restore_phase_{file_name_without_extension}.png")
 
 
 plt.figure(figsize=(12, 9))
@@ -67,7 +76,7 @@ plt.bar(checkpoint_contributions.index, checkpoint_contributions)
 plt.title("Checkpoint Phase Contribution")
 plt.ylabel("Duration (ms)")
 plt.xticks(rotation=45)
-plt.savefig("checkpoint_phase_contribution_bar.png")
+plt.savefig(f"checkpoint_phase_bar_{file_name_without_extension}.png")
 
 # Bar chart for restore phase contribution
 plt.figure(figsize=(12, 9))
@@ -75,4 +84,4 @@ plt.bar(restore_contributions.index, restore_contributions)
 plt.title("Restore Phase Contribution")
 plt.ylabel("Duration (ms)")
 plt.xticks(rotation=45)
-plt.savefig("restore_phase_contribution_bar.png")
+plt.savefig(f"restore_phase_bar_{file_name_without_extension}.png")

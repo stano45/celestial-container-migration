@@ -1,9 +1,18 @@
+import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 
+args = sys.argv
+if len(args) < 2:
+    print("Please provide the file name as an argument")
+    sys.exit(1)
+
+file_name = args[1]
+file_name_without_extension = file_name.split("/")[3].split(".")[0]
+
 
 # Reading the data into a DataFrame
-df = pd.read_csv("migration.csv")
+df = pd.read_csv(file_name)
 
 print(df.head())
 

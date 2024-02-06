@@ -40,26 +40,55 @@ class PodmanClient:
             f"in {run_container_duration_ms:.2f} ms"
         )
 
-    def _restore_checkpoint(self, checkpoint_path, print_stats=True):
-        logging.info(
-            f"Starting container from checkpoint {checkpoint_path}..."
-        )
-        try:
-            stats = run_command(
-                f"podman container restore "
-                f"-i {checkpoint_path} "
-                f"{'--print-stats' if print_stats is True else ''} "
-                f"--tcp-established "
-            )
-        except RuntimeError as e:
-            logging.error(f"Error restoring checkpoint: {e}")
-            return None
-        else:
-            logging.info(
-                f"Container started successfully from path {checkpoint_path} "
-                f"with {stats=}"
-            )
-            return stats
+        logging.info("Waiting for the container to start...")
+        self.wait_for_redis(container_id)
+
+    def wait_for_redis(self, container_id, max_retries=5):
+        retries = max_retries
+        while retries > 0:
+            time.sleep(1)
+            try:
+                output = run_command(
+                    f"podman exec {container_id} redis-cli PING"
+                )
+                if output is not None and "PONG" in output:
+                    logging.info("Container is ready.")
+                    break
+                else:
+                    logging.info("Container is not ready yet.")
+            except RuntimeError:
+                logging.error("Error pinging the container. Retrying...")
+                retries - 1
+
+    def _restore_checkpoint(
+        self, checkpoint_path, print_stats=True, retries=3
+    ):
+        for attempt in range(retries):
+            try:
+                stats_command = "--print-stats" if print_stats else ""
+                stats = run_command(
+                    f"podman container restore -i {checkpoint_path} "
+                    f"{stats_command} --tcp-established"
+                )
+                logging.info(
+                    f"Container started successfully from path "
+                    f"{checkpoint_path} with {stats=}"
+                )
+                logging.info("Waiting for the container to start...")
+                # TODO: use the container id from the stats
+                self.wait_for_redis("redis")
+                return stats
+            except RuntimeError as e:
+                logging.error(f"Error restoring checkpoint: {e}")
+                if attempt < retries - 1:
+                    logging.info(
+                        f"Retrying restore... {retries - attempt - 1} "
+                        f"attempts left."
+                    )
+                    time.sleep(1)
+                else:
+                    logging.error("All retries failed.")
+                    return None
 
     def remove_old_and_restore_container(
         self, old_container_id, checkpoint_path
@@ -78,21 +107,37 @@ class PodmanClient:
         return restore_stats
 
     def _checkpoint_container(
-        self, container_id, checkpoint_path, print_stats=True
+        self, container_id, checkpoint_path, print_stats=True, retries=3
     ):
-        logging.info(
-            f"Checkpointing container {container_id=} to {checkpoint_path=}..."
-        )
-        stats = run_command(
-            f"podman container checkpoint {container_id} "
-            f"-e={checkpoint_path} "
-            f"{'--print-stats' if print_stats is True else ''} "
-            f"--tcp-established "
-        )
-        logging.info(
-            f"Checkpoint created of {container_id=} at {checkpoint_path=} "
-            f"with: {stats=}"
-        )
+        stats = None
+        for attempt in range(retries):
+            try:
+                logging.info(
+                    f"Checkpointing container {container_id=} to "
+                    f"{checkpoint_path=}..."
+                )
+                stats_command = "--print-stats" if print_stats else ""
+                command = (
+                    f"podman container checkpoint {container_id} "
+                    f"-e={checkpoint_path} {stats_command} --tcp-established"
+                )
+                stats = run_command(command)
+                logging.info(
+                    f"Checkpoint created of {container_id=} at "
+                    f"{checkpoint_path=} with: {stats=}"
+                )
+                return stats
+            except RuntimeError as e:
+                logging.error(f"Error checkpointing container: {e}")
+                if attempt < retries - 1:
+                    logging.info(
+                        f"Retrying checkpointing... {retries - attempt - 1} "
+                        f"attempts left."
+                    )
+                    time.sleep(1)
+                else:
+                    logging.error("All retries failed.")
+                    break
         return stats
 
     def checkpoint_and_save_container(self, container_id):

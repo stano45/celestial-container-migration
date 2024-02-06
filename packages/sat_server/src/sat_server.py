@@ -1,5 +1,6 @@
 import base64
 import json
+import os
 from podman_client import PodmanClient
 from requests import RequestException
 import requests
@@ -136,18 +137,26 @@ def migrate(container_id):
 
     logging.info(
         f"Checkpoint created {checkpoint_path} of container {container_id} "
-        f"in {duration_micro:.2f}µs "
-        f"({(duration_micro/1000000):2f}s ). Sending checkpoint..."
+        f"in {(duration_micro/1000000):2f}s Sending checkpoint..."
     )
 
     response = make_response(
         send_file(checkpoint_path, mimetype="application/gzip")
     )
+
+    # Delete the checkpoint file after sending it
+    try:
+        os.remove(checkpoint_path)
+        logging.info(f"Successfully deleted checkpoint: {checkpoint_path}")
+    except Exception as e:
+        logging.error(f"Failed to delete checkpoint {checkpoint_path}: {e}")
+
     # Serialize and encode checkpoint_stats
     encoded_stats = base64.b64encode(checkpoint_stats.encode()).decode()
 
     response.headers["X-Checkpoint-Duration"] = str(duration_micro)
     response.headers["X-Checkpoint-Stats"] = encoded_stats
+
     return response
 
 

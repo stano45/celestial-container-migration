@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-CHECKPOINT_DIR = "/tmp"
+CHECKPOINT_DIR = "/root"
 CHECKPOINT_NAME = "podman-checkpoint"
 
 

@@ -114,7 +114,7 @@ def test_redis(requests_per_second=10):
     logging.info(f"Starting redis client daemon with {requests_per_second=}")
 
     while redis_client is None:
-        logging.info("Waiting for redis client to be set...")
+        logging.info("Waiting for host notification...")
         time.sleep(1)
 
     operations = ["set", "get", "del"]

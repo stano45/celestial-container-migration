@@ -1,8 +1,19 @@
+import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 
+args = sys.argv
+if len(args) < 2:
+    print("Please provide the file name as an argument")
+    sys.exit(1)
+
+file_name = args[1]
+file_name_without_extension = (
+    file_name.split("/")[3].split(".")[0].replace("-", "_")
+)
+
 # Read the CSV file
-df = pd.read_csv("client.csv")
+df = pd.read_csv(file_name)
 
 # Convert 't' to datetime if it's not already
 df["t"] = pd.to_datetime(df["t"], unit="s")
@@ -38,4 +49,4 @@ plt.xlabel("Time")
 plt.ylabel("Latency (ms)")
 # plt.yscale("log")
 plt.title("Latency Over Time")
-plt.savefig("latency_over_time.png")
+plt.savefig(f"latency_{file_name_without_extension}.png")

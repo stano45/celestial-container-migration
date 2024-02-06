@@ -20,7 +20,7 @@ groundstationconnectiontype = "all"
 
 [computeparams]
 vcpu_count = 4
-mem_size_mib = 4096
+mem_size_mib = 8192
 disk_size_mib = 1000
 ht_enabled = false
 bootparams = "random.trust_cpu=on"
@@ -43,7 +43,7 @@ long = 13.328285
 [groundstation.computeparams]
 vcpu_count = 4
 mem_size_mib = 4096
-disk_size_mib = 100
+disk_size_mib = 1000
 rootfs = "gst.img"
 
 [[groundstation]]
@@ -54,5 +54,5 @@ long = 13.328285
 [groundstation.computeparams]
 vcpu_count = 4
 mem_size_mib = 4096
-disk_size_mib = 100
+disk_size_mib = 1000
 rootfs = "client.img"
