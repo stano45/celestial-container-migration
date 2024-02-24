@@ -27,7 +27,7 @@ df["latency"] = df["latency"] * 1000
 # Plotting
 plt.figure(figsize=(12, 4))
 sns.lineplot(data=df, x='t_relative', y='status_code', markers=True, dashes=False)
-plt.title('Service availability over time (100 MB instance)')
+plt.title('Service availability over time (500 MB instance)')
 plt.xlabel('Relative timestamp (seconds)')
 plt.ylabel('Availability')
 plt.yticks([0, 1], ['Down', 'Up'])
