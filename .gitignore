@@ -172,3 +172,5 @@ Release.key
 
 # Exclude redis db dumps
 *.rdb
+
+*.whl
