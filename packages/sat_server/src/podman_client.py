@@ -1,6 +1,8 @@
 import json
 import time
+import redis
 import logging
+from tqdm import tqdm
 
 from utils import get_checkpoint_path, get_file_size, run_command
 
@@ -18,7 +20,6 @@ class PodmanClient:
         image_name="redis:alpine",
         host_port=6379,
         container_port=6379,
-        host_rdb_path="./dump.rdb",
     ):
         logging.info(f"Running container {container_name}")
         run_container_start_time = time.time()
@@ -28,7 +29,6 @@ class PodmanClient:
             f"--name {container_name} "
             f"-d "
             f"-p {host_port}:{container_port} "
-            f"-v {host_rdb_path}:/data/dump.rdb "
             f"{image_name}"
         )
 
@@ -211,3 +211,43 @@ class PodmanClient:
     def inspect_container(self, container_id):
         logging.info(f"Inspecting container {container_id}...")
         return run_command(f"podman inspect {container_id}", ignore_error=True)
+
+    def _write_data(self, redis_client, keys_count, bytes_per_key):
+        data = {}
+        for i in tqdm(
+            range(1, keys_count + 1), desc="Writing data", ncols=100
+        ):
+            key = f"key{i}"
+            # value = generate_random_string(bytes_per_key)
+            value = "0" * bytes_per_key
+            redis_client.set(key, value)
+            data[key] = value
+        return data
+
+    def generate_redis_data(self, data_size_mb, bytes_per_key):
+        logging.info(
+            f"Generating {data_size_mb}MB of data with {bytes_per_key} bytes"
+            f"per key in Redis..."
+        )
+
+        redis_client = redis.Redis(
+            host="localhost", port=6379, decode_responses=True
+        )
+
+        if redis_client is None:
+            logging.error("Redis client is None")
+
+        if redis_client.ping() is False:
+            logging.error("Redis client ping failed")
+
+        keys_count = (data_size_mb * 1024 * 1024) // bytes_per_key
+        logging.info(
+            f"Writing {keys_count} keys with {bytes_per_key} bytes per key"
+        )
+        self._write_data(
+            redis_client=redis_client,
+            keys_count=keys_count,
+            bytes_per_key=bytes_per_key,
+        )
+
+        logging.info(f"Successfully wrote {keys_count} keys")

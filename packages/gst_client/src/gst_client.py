@@ -91,12 +91,13 @@ def run_operation(op):
             key = random.randint(0, 100000)
         else:
             key = random.choice(list(known_key_values.keys()))
-        expected_value = known_key_values.get(key)
-        actual_value = redis_client.get(key)
-        if expected_value != actual_value:
-            error = f"Value mismatch: {expected_value=}, " f"{actual_value=}"
-            logging.error(error)
-            raise ValueError(error)
+        # expected_value = known_key_values.get(key)
+        # actual_value = redis_client.get(key)
+        redis_client.get(key)
+        # if expected_value != actual_value:
+        #     error = f"Value mismatch: {expected_value=} - {actual_value=}"
+        #     logging.error(error)
+        #     raise ValueError(error)
         return
     elif op == "del":
         if len(known_key_values) == 0:

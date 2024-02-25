@@ -194,6 +194,18 @@ def start_container(target_ip, container_name):
         return None
 
 
+def generate_data(target_ip, data_size_mb, bytes_per_key=1024):
+    url = f"http://{target_ip}:8000/generate_data"
+    payload = {"data_size_mb": data_size_mb, "bytes_per_key": bytes_per_key}
+    try:
+        response = requests.post(url, json=payload)
+        logging.info(f"Response: {response.status_code}, {response.text}")
+        return response.text
+    except requests.RequestException as e:
+        logging.error(f"Error generating data on {target_ip}: {e}")
+        return None
+
+
 def send_container_migration_request(source_ip, target_ip, container_name):
     """Send a request to the client to initiate container migration."""
     target_url = f"http://{target_ip}:8000/start_migration"
@@ -289,7 +301,7 @@ def build_sat_domain(sat):
     return f"{id}.{shell}.celestial"
 
 
-def test_migration(gateway, period_seconds=5):
+def test_migration(gateway, instance_size_mb, bytes_per_key, period_seconds=5):
     logging.info(f"Starting migration test with {period_seconds=}")
     with open("migration.csv", "w") as f:
         f.write(CSV_HEADER)
@@ -333,6 +345,16 @@ def test_migration(gateway, period_seconds=5):
                 if response is None:
                     logging.error(f"Failed to start redis on {sat_domain=}")
                     continue
+
+                if instance_size_mb > 0:
+                    response = generate_data(
+                        sat_domain, instance_size_mb, bytes_per_key
+                    )
+                    if response is None:
+                        logging.error(
+                            f"Failed to generate data on {sat_domain=}"
+                        )
+                        continue
 
                 # Update current_sat, seen_sats, and notify client
                 sat["domain"] = sat_domain
@@ -393,15 +415,23 @@ def test_migration(gateway, period_seconds=5):
 
 
 def main():
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 5:
         exit(
-            "Usage: python3 gst_server.py [gateway] \n   "
-            "OR: start-gst-server [gateway]"
+            "Usage: start-gst-server [gateway] [check_period] "
+            "[instance_size_mb] [bytes_per_key]"
         )
     gateway = sys.argv[1]
-    logging.info(f"Hello from ground station server! Gateway is {gateway}")
+    check_period = int(sys.argv[2])
+    instance_size_mb = int(sys.argv[3])
+    bytes_per_key = int(sys.argv[4])
+    logging.info(
+        f"Hello from ground station server! Gateway is {gateway}, "
+        f"check period is {check_period},"
+        f"redis instance size is {instance_size_mb}, "
+        f"with {bytes_per_key} bytes per key."
+    )
 
-    wait_seconds = 20
+    wait_seconds = 10
     logging.info(f"Waiting {wait_seconds}s for initialization")
     time.sleep(wait_seconds)
 
@@ -415,7 +445,12 @@ def main():
     logging.info(f"/shell/{0}:\n{shell_id}\n")
 
     # START MIGRATION TEST
-    test_migration(gateway=gateway, period_seconds=5)
+    test_migration(
+        gateway=gateway,
+        instance_size_mb=instance_size_mb,
+        bytes_per_key=bytes_per_key,
+        period_seconds=check_period,
+    )
 
     # TODO: Cleanup
     # for connected_sat in connected_sats:

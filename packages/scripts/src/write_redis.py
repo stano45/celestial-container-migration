@@ -18,7 +18,8 @@ def write_data(redis_client, keys_count, bytes_per_key):
     data = {}
     for i in tqdm(range(1, keys_count + 1), desc="Writing data", ncols=100):
         key = f"key{i}"
-        value = generate_random_string(bytes_per_key)
+        # value = generate_random_string(bytes_per_key)
+        value = "0" * bytes_per_key
         redis_client.set(key, value)
         data[key] = value
     return data

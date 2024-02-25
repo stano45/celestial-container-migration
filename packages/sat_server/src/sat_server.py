@@ -253,6 +253,60 @@ def remove_volume(volume_id):
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
+@app.route("/generate_data", methods=["POST"])
+def generate_data():
+    data = request.json
+    data_size_mb = data.get("data_size_mb")
+    bytes_per_key = data.get("bytes_per_key")
+
+    if not data_size_mb or not bytes_per_key:
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": (
+                        "Missing data_size_mb or bytes_per_key in the request"
+                    ),
+                }
+            ),
+            400,
+        )
+
+    try:
+        data_size_mb = int(data_size_mb)
+        bytes_per_key = int(bytes_per_key)
+    except ValueError:
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": (
+                        "data_size_mb and bytes_per_key must be integers"
+                    ),
+                }
+            ),
+            400,
+        )
+
+    try:
+        podman_client.generate_redis_data(data_size_mb, bytes_per_key)
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": (
+                        f"Data generation initiated with size "
+                        f"{data_size_mb}MB with {bytes_per_key} bytes per key."
+                    ),
+                }
+            ),
+            200,
+        )
+    except Exception as e:
+        logging.error(f"Failed to generate data: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
 @app.route("/set_redis", methods=["POST"])
 def set_redis():
     data = request.json
