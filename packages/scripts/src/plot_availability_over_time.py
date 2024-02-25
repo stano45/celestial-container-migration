@@ -4,11 +4,14 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 args = sys.argv
-if len(args) < 2:
-    print("Please provide the file name as an argument")
+if len(args) < 3:
+    print(
+        "Usage: python plot_availability_over_time.py <file_name.csv> <redis_instance_size>\n"
+    )
     sys.exit(1)
 
 file_name = args[1]
+redis_instance_size = args[2]
 file_name_without_extension = (
     file_name.split("/")[-1].split(".")[0].replace("-", "_")
 )
@@ -16,9 +19,9 @@ file_name_without_extension = (
 df = pd.read_csv(file_name)
 
 # Convert 'status' to numeric values: 1 for 'success', 0 for 'fail'
-df['status_code'] = df['status'].map({'success': 1, 'fail': 0})
+df["status_code"] = df["status"].map({"success": 1, "fail": 0})
 # Resetting the time to start from 0
-df['t_relative'] = df['t'] - df['t'].min()
+df["t_relative"] = df["t"] - df["t"].min()
 
 # Convert 't' to datetime if it's not already
 df["t"] = pd.to_datetime(df["t"], unit="s")
@@ -26,14 +29,16 @@ df["latency"] = df["latency"] * 1000
 
 # Plotting
 plt.figure(figsize=(12, 4))
-sns.lineplot(data=df, x='t_relative', y='status_code', markers=True, dashes=False)
-plt.title('Service availability over time (500 MB instance)')
-plt.xlabel('Relative timestamp (seconds)')
-plt.ylabel('Availability')
-plt.yticks([0, 1], ['Down', 'Up'])
+sns.lineplot(
+    data=df, x="t_relative", y="status_code", markers=True, dashes=False
+)
+plt.title(f"Service availability over time ({redis_instance_size} instance)")
+plt.xlabel("Relative timestamp (seconds)")
+plt.ylabel("Availability")
+plt.yticks([0, 1], ["Down", "Up"])
 
 # Display the plot
-plt.savefig(f'plot_availability_{file_name_without_extension}.png', dpi=1000)
+plt.savefig(f"plot_availability_{file_name_without_extension}.png", dpi=1000)
 
 # Calculate average latency
 avg_latency = df["latency"].mean()
@@ -52,8 +57,12 @@ failure_rate = (fail_count / total_count) * 100
 
 csv_file_path = f"stats_availability_{file_name_without_extension}.csv"
 with open(csv_file_path, "w") as f:
-    f.write("Total Timespan,Total Downtime,Downtime Percent,Uptime Percent,Avg Request Latency, Request Failure Rate\n")
-    f.write(f"{total_timespan:.2f} s,{downtime:.2f} s,{downtime_percent:.2f}%,{100-downtime_percent:.2f}%,{avg_latency:.2f} ms,{failure_rate:.2f}%\n")
+    f.write(
+        "Total Timespan,Total Downtime,Downtime Percent,Uptime Percent,Avg Request Latency, Request Failure Rate\n"
+    )
+    f.write(
+        f"{total_timespan:.2f} s,{downtime:.2f} s,{downtime_percent:.2f}%,{100-downtime_percent:.2f}%,{avg_latency:.2f} ms,{failure_rate:.2f}%\n"
+    )
 
 # Save to CSV
 
