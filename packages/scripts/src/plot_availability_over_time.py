@@ -33,7 +33,7 @@ sns.set_theme()
 sns.lineplot(
     data=df, x="t_relative", y="status_code", markers=True, dashes=False
 )
-plt.title(f"Service availability over time ({plot_title})")
+plt.title(f"Service Availability Over Time ({plot_title})")
 plt.xlabel("Relative timestamp (seconds)")
 plt.ylabel("Availability")
 plt.yticks([0, 1], ["Down", "Up"])

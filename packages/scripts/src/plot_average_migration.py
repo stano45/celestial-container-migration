@@ -84,7 +84,7 @@ plt.xlabel("Size of the instance (in MB)")
 plt.ylabel("Average migration duration (in seconds)")
 
 # Title
-plt.title("Average Migration Duration Per Instance Size")
+plt.title("Average Migration Duration vs Instance Size")
 
 # Save the plot
 plt.savefig(
