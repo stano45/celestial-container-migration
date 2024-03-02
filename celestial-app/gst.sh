@@ -2,7 +2,7 @@
 IP=$(/sbin/ip route | awk '/default/ { print $3 }')
 REDIS_INSTANCE_SIZE_MB=5000
 CHECK_PERIOD=5
-BYTES_PER_KEY=128000
+BYTES_PER_KEY=256000
 
 # # set the nameserver to our gateway IP
 # # this way, we can use the helpful X.Y.celestial DNS service
