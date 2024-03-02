@@ -1,2 +1,2 @@
 Total Timespan,Total Downtime,Downtime Percent,Uptime Percent,Avg Request Latency, Request Failure Rate
-1757.14 s,632.61 s,36.00%,64.00%,64.58 ms,93.54%
+1600.32 s,231.87 s,14.49%,85.51%,22.73 ms,65.29%

@@ -38,7 +38,11 @@ plt.ylabel("Availability")
 plt.yticks([0, 1], ["Down", "Up"])
 
 # Display the plot
-plt.savefig(f"plot_availability_{file_name_without_extension}.png", dpi=1000)
+plt.savefig(
+    f"../../fig/plot_availability_{file_name_without_extension}.pdf",
+    dpi=1000,
+    format="pdf",
+)
 
 # Calculate average latency
 avg_latency = df["latency"].mean()
@@ -55,7 +59,9 @@ fail_count = df[df["status"] == "fail"].shape[0]
 total_count = df.shape[0]
 failure_rate = (fail_count / total_count) * 100
 
-csv_file_path = f"stats_availability_{file_name_without_extension}.csv"
+csv_file_path = (
+    f"../../fig/stats_availability_{file_name_without_extension}.csv"
+)
 with open(csv_file_path, "w") as f:
     f.write(
         "Total Timespan,Total Downtime,Downtime Percent,Uptime Percent,Avg Request Latency, Request Failure Rate\n"

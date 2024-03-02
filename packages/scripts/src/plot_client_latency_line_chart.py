@@ -49,4 +49,8 @@ plt.xlabel("Time")
 plt.ylabel("Latency (ms)")
 # plt.yscale("log")
 plt.title("Latency Over Time")
-plt.savefig(f"latency_{file_name_without_extension}.png")
+plt.savefig(
+    f"../../fig/latency_{file_name_without_extension}.pdf",
+    dpi=1000,
+    format="pdf",
+)

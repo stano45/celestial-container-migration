@@ -38,4 +38,8 @@ plt.ylabel("Duration (in seconds)")
 plt.title(f"Total vs Checkpoint vs Restore Duration Over Time ({plot_title})")
 plt.legend()
 plt.grid(True)
-plt.savefig(f"migration_duration_over_time_{file_name_without_extension}.png")
+plt.savefig(
+    f"../../fig/migration_duration_over_time_{file_name_without_extension}.pdf",
+    dpi=1000,
+    format="pdf",
+)
