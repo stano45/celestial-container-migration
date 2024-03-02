@@ -29,5 +29,5 @@ python3 $PYTHON_FILES/stats_downtime.py "$client_file_name" "$migration_file_nam
 echo "Generating criu plot..."
 python3 $PYTHON_FILES/plot_criu_speed_pie_chart.py $migration_file_name "$plot_title"
 
-echo "Generating migration plot..."
+echo "Generating migration line plot..."
 python3 $PYTHON_FILES/plot_migration_speed_line_chart.py $migration_file_name "$plot_title"

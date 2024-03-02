@@ -29,6 +29,7 @@ df["latency"] = df["latency"] * 1000
 
 # Plotting
 plt.figure(figsize=(12, 4))
+sns.set_theme()
 sns.lineplot(
     data=df, x="t_relative", y="status_code", markers=True, dashes=False
 )

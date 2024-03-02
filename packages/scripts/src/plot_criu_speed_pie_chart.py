@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import sys
+import seaborn as sns
 
+sns.set_theme()
 args = sys.argv
 if len(args) < 3:
     print(

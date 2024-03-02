@@ -1,7 +1,9 @@
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
+sns.set_theme()
 args = sys.argv
 if len(args) < 3:
     print(
@@ -16,8 +18,6 @@ file_name_without_extension = file_name.split("/")[-1].split(".")[0]
 
 # Reading the data into a DataFrame
 df = pd.read_csv(file_name)
-
-print(df.head())
 
 df.reset_index(drop=True, inplace=True)
 

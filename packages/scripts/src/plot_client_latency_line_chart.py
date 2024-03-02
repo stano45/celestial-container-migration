@@ -1,7 +1,9 @@
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
+sns.set_theme()
 args = sys.argv
 if len(args) < 2:
     print("Please provide the file name as an argument")
