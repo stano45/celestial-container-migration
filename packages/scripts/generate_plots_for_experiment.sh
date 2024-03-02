@@ -23,6 +23,9 @@ echo "Client file name: $client_file_name"
 echo "Generating availability plot..."
 python3 $PYTHON_FILES/plot_availability_over_time.py $client_file_name "$plot_title"
 
+echo "Generating migration stats..."
+python3 $PYTHON_FILES/stats_downtime.py "$client_file_name" "$migration_file_name"
+
 echo "Generating criu plot..."
 python3 $PYTHON_FILES/plot_criu_speed_pie_chart.py $migration_file_name "$plot_title"
 
