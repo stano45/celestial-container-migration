@@ -1,4 +1,6 @@
 import json
+import random
+import string
 import time
 import redis
 import logging
@@ -218,8 +220,7 @@ class PodmanClient:
             range(1, keys_count + 1), desc="Writing data", ncols=100
         ):
             key = f"key{i}"
-            # value = generate_random_string(bytes_per_key)
-            value = "0" * bytes_per_key
+            value = generate_random_string(bytes_per_key)
             redis_client.set(key, value)
             data[key] = value
         return data
@@ -251,3 +252,12 @@ class PodmanClient:
         )
 
         logging.info(f"Successfully wrote {keys_count} keys")
+
+
+def generate_random_string(bytes):
+    """Generate a random string of given length."""
+
+    return "".join(
+        random.choice(string.ascii_letters + string.digits)
+        for _ in range(bytes)
+    )

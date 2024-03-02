@@ -141,7 +141,7 @@ def test_redis(requests_per_second=10):
                     error=err,
                     latency=time.time() - start,
                 )
-                logging.info(f"Writing entry to file {entry=}")
+                logging.info(entry)
                 f.write(entry)
             else:
                 entry = build_entry(
@@ -152,7 +152,7 @@ def test_redis(requests_per_second=10):
                     error="",
                     latency=time.time() - start,
                 )
-                logging.info(f"Writing entry to file {entry=}")
+                logging.info(entry)
                 f.write(entry)
             f.flush()
 

@@ -20,8 +20,8 @@ groundstationconnectiontype = "all"
 
 [computeparams]
 vcpu_count = 4
-mem_size_mib = 8192
-disk_size_mib = 8192
+mem_size_mib = 16384
+disk_size_mib = 16384
 ht_enabled = false
 bootparams = "random.trust_cpu=on"
 kernel = "vmlinux.bin"

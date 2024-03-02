@@ -431,7 +431,7 @@ def main():
         f"with {bytes_per_key} bytes per key."
     )
 
-    wait_seconds = 10
+    wait_seconds = 12
     logging.info(f"Waiting {wait_seconds}s for initialization")
     time.sleep(wait_seconds)
 
