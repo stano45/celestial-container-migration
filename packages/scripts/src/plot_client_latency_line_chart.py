@@ -23,7 +23,7 @@ df["latency"] = df["latency"] * 1000
 
 # Calculate average latency
 avg_latency = df["latency"].mean()
-print(f"Average Latency: {avg_latency:.2f} ms")
+print(f"Mean Latency: {avg_latency:.2f} ms")
 
 # Calculate total timespan in milliseconds
 total_timespan = (df["t"].max() - df["t"].min()).total_seconds() * 1000
@@ -50,7 +50,7 @@ plt.plot(df["t"], df["latency"])
 plt.xlabel("Time")
 plt.ylabel("Latency (ms)")
 # plt.yscale("log")
-plt.title("Latency Over Time")
+# plt.title("Latency Over Time")
 plt.savefig(
     f"../../fig/latency_{file_name_without_extension}.pdf",
     dpi=1000,

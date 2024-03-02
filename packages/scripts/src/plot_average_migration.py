@@ -41,14 +41,14 @@ average_duration_5000 = df_5000["total_duration"].mean() / 1000000
 
 data = {
     "Instance Size (MB)": [
-        "0 (base image only)",
+        "0",
         "100",
         "500",
         "1000",
         "2500",
         "5000",
     ],
-    "Average Migration Duration (seconds)": [
+    "Mean Migration Duration (seconds)": [
         average_duration_0,
         average_duration_100,
         average_duration_500,
@@ -58,35 +58,40 @@ data = {
     ],
 }
 df_plot = pd.DataFrame(data)
+# Find the maximum value in your data for setting the ylim appropriately
+max_duration = df_plot["Mean Migration Duration (seconds)"].max()
+
+# Increase the upper limit by a percentage (e.g., 10%) for padding
 
 # Plotting with Seaborn for consistency
 plt.figure(figsize=(12, 5))
 sns.set_theme()  # Ensures that the theme is applied
 sns.barplot(
     x="Instance Size (MB)",
-    y="Average Migration Duration (seconds)",
+    y="Mean Migration Duration (seconds)",
     data=df_plot,
 )
+plt.ylim(
+    0, max_duration * 1.1
+)  # Adjust 1.1 as needed to increase/decrease padding
 
 # Adding value labels
 for index, row in df_plot.iterrows():
     plt.text(
         index,
-        row["Average Migration Duration (seconds)"],
-        f"{row['Average Migration Duration (seconds)']:.2f}",
+        row["Mean Migration Duration (seconds)"],
+        f"{row['Mean Migration Duration (seconds)']:.2f}",
         color="black",
         ha="center",
         va="bottom",
     )
 
 # Axes labels
-plt.xlabel("Size of the instance (in MB)")
-plt.ylabel("Average migration duration (in seconds)")
+plt.xlabel("Instance size (MB)")
+plt.ylabel("Mean migration duration (s)")
 
 # Title
-plt.title("Average Migration Duration vs Instance Size")
+# plt.title("Mean Migration Duration vs Instance Size")
 
 # Save the plot
-plt.savefig(
-    "../../fig/avg_migration_durations_seaborn.pdf", dpi=1000, format="pdf"
-)
+plt.savefig("../../fig/avg_migration_durations.pdf", dpi=1000, format="pdf")

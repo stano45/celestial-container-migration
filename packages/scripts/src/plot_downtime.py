@@ -27,11 +27,11 @@ for index, row in df.iterrows():
 
 
 # Axes labels
-plt.xlabel("Size of the instance (in MB)")
+plt.xlabel("Instance size (MB)")
 plt.ylabel("Downtime (%)")
 
 # Title
-plt.title("Downtime vs Instance Size")
+# plt.title("Downtime vs Instance Size")
 
 
 plt.savefig(

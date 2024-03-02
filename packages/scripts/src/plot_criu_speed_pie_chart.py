@@ -54,7 +54,7 @@ plt.pie(
     labels=checkpoint_contributions.index,
     autopct="%1.1f%%",
 )
-plt.title(f"Checkpoint Phase Contribution ({plot_title})")
+# plt.title(f"Checkpoint Phase Contribution ({plot_title})")
 
 # Plot for restore phase
 plt.figure(figsize=(8, 8))
@@ -63,7 +63,7 @@ plt.pie(
     labels=checkpoint_contributions.index,
     autopct="%1.1f%%",
 )
-plt.title(f"Checkpoint Phase Contribution ({plot_title})")
+# plt.title(f"Checkpoint Phase Contribution ({plot_title})")
 plt.savefig(
     f"../../fig/checkpoint_phase_{file_name_without_extension}.pdf",
     dpi=1000,
@@ -82,7 +82,7 @@ plt.pie(
 
 plt.figure(figsize=(12, 9))
 plt.bar(checkpoint_contributions.index, checkpoint_contributions)
-plt.title(f"Checkpoint Phase Contribution ({plot_title})")
+# plt.title(f"Checkpoint Phase Contribution ({plot_title})")
 plt.ylabel("Duration (ms)")
 plt.xticks(rotation=45)
 plt.savefig(
