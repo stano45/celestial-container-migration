@@ -3,12 +3,15 @@ import pandas as pd
 import sys
 
 args = sys.argv
-if len(args) < 2:
-    print("Please provide the file name as an argument")
+if len(args) < 3:
+    print(
+        "Usage: python plot_criu_speed_pie_chart.py <file_name.csv> <plot_title>\n"
+    )
     sys.exit(1)
 
 file_name = args[1]
-file_name_without_extension = file_name.split("/")[3].split(".")[0]
+plot_title = args[2]
+file_name_without_extension = file_name.split("/")[-1].split(".")[0]
 
 df = pd.read_csv(filepath_or_buffer=file_name)
 
@@ -49,7 +52,7 @@ plt.pie(
     labels=checkpoint_contributions.index,
     autopct="%1.1f%%",
 )
-plt.title("Checkpoint Phase Contribution")
+plt.title(f"Checkpoint Phase Contribution ({plot_title})")
 
 # Plot for restore phase
 plt.figure(figsize=(8, 8))
@@ -58,7 +61,7 @@ plt.pie(
     labels=checkpoint_contributions.index,
     autopct="%1.1f%%",
 )
-plt.title("Checkpoint Phase Contribution")
+plt.title(f"Checkpoint Phase Contribution ({plot_title})")
 plt.savefig(f"checkpoint_phase_{file_name_without_extension}.png")
 
 plt.figure(figsize=(8, 8))
@@ -67,21 +70,21 @@ plt.pie(
     labels=restore_contributions.index,
     autopct="%1.1f%%",
 )
-plt.title("Restore Phase Contribution")
-plt.savefig(f"restore_phase_{file_name_without_extension}.png")
+# plt.title("Restore Phase Contribution")
+# plt.savefig(f"restore_phase_{file_name_without_extension}.png")
 
 
 plt.figure(figsize=(12, 9))
 plt.bar(checkpoint_contributions.index, checkpoint_contributions)
-plt.title("Checkpoint Phase Contribution")
+plt.title(f"Checkpoint Phase Contribution ({plot_title})")
 plt.ylabel("Duration (ms)")
 plt.xticks(rotation=45)
 plt.savefig(f"checkpoint_phase_bar_{file_name_without_extension}.png")
 
-# Bar chart for restore phase contribution
-plt.figure(figsize=(12, 9))
-plt.bar(restore_contributions.index, restore_contributions)
-plt.title("Restore Phase Contribution")
-plt.ylabel("Duration (ms)")
-plt.xticks(rotation=45)
-plt.savefig(f"restore_phase_bar_{file_name_without_extension}.png")
+# # Bar chart for restore phase contribution
+# plt.figure(figsize=(12, 9))
+# plt.bar(restore_contributions.index, restore_contributions)
+# plt.title("Restore Phase Contribution")
+# plt.ylabel("Duration (ms)")
+# plt.xticks(rotation=45)
+# plt.savefig(f"restore_phase_bar_{file_name_without_extension}.png")

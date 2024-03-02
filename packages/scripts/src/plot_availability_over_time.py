@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 args = sys.argv
 if len(args) < 3:
     print(
-        "Usage: python plot_availability_over_time.py <file_name.csv> <redis_instance_size>\n"
+        "Usage: python plot_availability_over_time.py <file_name.csv> <plot_title>\n"
     )
     sys.exit(1)
 
 file_name = args[1]
-redis_instance_size = args[2]
+plot_title = args[2]
 file_name_without_extension = (
     file_name.split("/")[-1].split(".")[0].replace("-", "_")
 )
@@ -32,7 +32,7 @@ plt.figure(figsize=(12, 4))
 sns.lineplot(
     data=df, x="t_relative", y="status_code", markers=True, dashes=False
 )
-plt.title(f"Service availability over time ({redis_instance_size} instance)")
+plt.title(f"Service availability over time ({plot_title})")
 plt.xlabel("Relative timestamp (seconds)")
 plt.ylabel("Availability")
 plt.yticks([0, 1], ["Down", "Up"])

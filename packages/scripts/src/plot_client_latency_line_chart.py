@@ -9,7 +9,7 @@ if len(args) < 2:
 
 file_name = args[1]
 file_name_without_extension = (
-    file_name.split("/")[3].split(".")[0].replace("-", "_")
+    file_name.split("/")[-1].split(".")[0].replace("-", "_")
 )
 
 # Read the CSV file

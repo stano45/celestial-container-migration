@@ -3,12 +3,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 args = sys.argv
-if len(args) < 2:
-    print("Please provide the file name as an argument")
+if len(args) < 3:
+    print(
+        "Usage: python plot_migration_speed_line_chart.py <file_name.csv> <plot_title>\n"
+    )
     sys.exit(1)
 
 file_name = args[1]
-file_name_without_extension = file_name.split("/")[3].split(".")[0]
+plot_title = args[2]
+file_name_without_extension = file_name.split("/")[-1].split(".")[0]
 
 
 # Reading the data into a DataFrame
@@ -32,7 +35,7 @@ plt.plot(checkpoint_duration, label="Checkpoint Duration")
 plt.plot(restore_duration, label="Restore Duration")
 plt.xlabel("Timestamp")
 plt.ylabel("Duration (in seconds)")
-plt.title("Total vs Checkpoint vs Restore Duration Over Time")
+plt.title(f"Total vs Checkpoint vs Restore Duration Over Time ({plot_title})")
 plt.legend()
 plt.grid(True)
-plt.savefig("migration_duration_over_time.png")
+plt.savefig(f"migration_duration_over_time_{file_name_without_extension}.png")
