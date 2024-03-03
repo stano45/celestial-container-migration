@@ -28,7 +28,7 @@ df["t"] = pd.to_datetime(df["t"], unit="s")
 df["latency"] = df["latency"] * 1000
 
 # Plotting
-plt.figure(figsize=(12, 4))
+plt.figure(figsize=(12, 5))
 sns.set_theme()
 sns.lineplot(
     data=df, x="t_relative", y="status_code", markers=True, dashes=False
