@@ -9,7 +9,7 @@ if len(args) < 3:
     print(
         "Usage: python plot_average_migration.py <migration-empty.csv> "
         "<migration-100.csv> <migration-500.csv> <migration-1000.csv> "
-        "<migration-2500.csv> <migration-5000.csv>\n"
+        "<migration-1500.csv> <migration-2000.csv>\n"
     )
     sys.exit(1)
 
@@ -17,8 +17,8 @@ file_name_0 = args[1]
 file_name_100 = args[2]
 file_name_500 = args[3]
 file_name_1000 = args[4]
-file_name_2500 = args[5]
-file_name_5000 = args[6]
+file_name_1500 = args[5]
+file_name_2000 = args[6]
 
 
 df_0 = pd.read_csv(file_name_0)
@@ -33,11 +33,11 @@ average_duration_500 = df_500["total_duration"].mean() / 1000000
 df_1000 = pd.read_csv(file_name_1000)
 average_duration_1000 = df_1000["total_duration"].mean() / 1000000
 
-df_2500 = pd.read_csv(file_name_2500)
-average_duration_2500 = df_2500["total_duration"].mean() / 1000000
+df_1500 = pd.read_csv(file_name_1500)
+average_duration_1500 = df_1500["total_duration"].mean() / 1000000
 
-df_5000 = pd.read_csv(file_name_5000)
-average_duration_5000 = df_5000["total_duration"].mean() / 1000000
+df_2000 = pd.read_csv(file_name_2000)
+average_duration_2000 = df_2000["total_duration"].mean() / 1000000
 
 data = {
     "Instance Size (MB)": [
@@ -45,16 +45,16 @@ data = {
         "100",
         "500",
         "1000",
-        "2500",
-        "5000",
+        "1500",
+        "2000",
     ],
     "Mean Migration Duration (seconds)": [
         average_duration_0,
         average_duration_100,
         average_duration_500,
         average_duration_1000,
-        average_duration_2500,
-        average_duration_5000,
+        average_duration_1500,
+        average_duration_2000,
     ],
 }
 df_plot = pd.DataFrame(data)

@@ -1,0 +1,2 @@
+total_timespan_s,total_downtime_s,downtime_percent,uptime_percent,avg_rq_latency_ms,rq_failure_rate
+1740.72,283.35,16.28,83.72,13.26,13.88

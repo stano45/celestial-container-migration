@@ -1,4 +1,5 @@
 import json
+import os
 import random
 import string
 import time
@@ -31,7 +32,8 @@ class PodmanClient:
             f"--name {container_name} "
             f"-d "
             f"-p {host_port}:{container_port} "
-            f"{image_name}"
+            f"-v ./redis.conf:/usr/local/etc/redis/redis.conf "
+            f"{image_name} redis-server /usr/local/etc/redis/redis.conf"
         )
 
         run_container_duration_ms = (
@@ -70,7 +72,7 @@ class PodmanClient:
                 stats_command = "--print-stats" if print_stats else ""
                 stats = run_command(
                     f"podman container restore -i {checkpoint_path} "
-                    f"{stats_command} --tcp-established"
+                    f"{stats_command} --tcp-established --ignore-rootfs"
                 )
                 logging.info(
                     f"Container started successfully from path "
@@ -121,7 +123,8 @@ class PodmanClient:
                 stats_command = "--print-stats" if print_stats else ""
                 command = (
                     f"podman container checkpoint {container_id} "
-                    f"-e={checkpoint_path} {stats_command} --tcp-established"
+                    f"-e={checkpoint_path} {stats_command} "
+                    f"--tcp-established --ignore-rootfs"
                 )
                 stats = run_command(command)
                 logging.info(
@@ -215,15 +218,21 @@ class PodmanClient:
         return run_command(f"podman inspect {container_id}", ignore_error=True)
 
     def _write_data(self, redis_client, keys_count, bytes_per_key):
-        data = {}
-        for i in tqdm(
-            range(1, keys_count + 1), desc="Writing data", ncols=100
-        ):
+        start = time.time()
+        pipe = redis_client.pipeline()
+
+        for i in range(1, keys_count + 1):
             key = f"key{i}"
-            value = generate_random_string(bytes_per_key)
-            redis_client.set(key, value)
-            data[key] = value
-        return data
+            value = os.urandom(bytes_per_key)
+            pipe.set(key, value)
+            if i % 1000 == 0:
+                pipe.execute()
+                pass
+
+        # return data
+        pipe.execute()
+        end = time.time()
+        logging.info(f"Time to write {keys_count} keys: {end - start} seconds")
 
     def generate_redis_data(self, data_size_mb, bytes_per_key):
         logging.info(

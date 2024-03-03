@@ -241,34 +241,6 @@ def send_container_migration_request(source_ip, target_ip, container_name):
         return None
 
 
-# TODO: cleanup
-# def stop_container(target_ip, container_id):
-#     url = f"http://{target_ip}:8000/stop_container/{container_id}"
-#     try:
-#         response = requests.post(url)
-#         logging.info(f"Response: {response.status_code}, {response.text}")
-#     except requests.RequestException as e:
-#         logging.error(f"Error: {e}")
-
-
-# def remove_container(target_ip, container_id):
-#     url = f"http://{target_ip}:8000/remove_container/{container_id}"
-#     try:
-#         response = requests.post(url)
-#         logging.info(f"Response: {response.status_code}, {response.text}")
-#     except requests.RequestException as e:
-#         logging.error(f"Error: {e}")
-
-
-# def remove_volume(target_ip, volume_id):
-#     url = f"http://{target_ip}:8000/remove_volume/{volume_id}"
-#     try:
-#         response = requests.post(url)
-#         logging.info(f"Response: {response.status_code}, {response.text}")
-#     except requests.RequestException as e:
-#         logging.error(f"Error: {e}")
-
-
 def notify_client(client_ip, target_ip):
     url = f"http://{client_ip}:8000/notify"
     payload = {"host": target_ip}
@@ -312,11 +284,12 @@ def test_migration(gateway, instance_size_mb, bytes_per_key, period_seconds=5):
         # Keep track of seen sats
         # TODO: add logic to remove old sats
         # TODO: to allow migrations after the first orbit
+        migrations_count = 0
         seen_sats = {}
         while True:
             time.sleep(period_seconds)
 
-            logging.info(f"{current_sat=}")
+            logging.info(f"{current_sat=}, {migrations_count=}")
 
             gst = get_gst("berlin", gateway)
             connected_sats = gst["connectedSats"]
@@ -366,7 +339,6 @@ def test_migration(gateway, instance_size_mb, bytes_per_key, period_seconds=5):
             # Container is running on current_sat, perform migration
             # TODO: Add logic to not do this periodically, but only when
             # the satellite is about to leave the bounding box
-            logging.info(f'Current host: {current_sat["domain"]}')
             next_sat = None
             for connected_sat in connected_sats:
                 sat = connected_sat["sat"]
@@ -396,6 +368,8 @@ def test_migration(gateway, instance_size_mb, bytes_per_key, period_seconds=5):
             if response is None:
                 logging.error(f"Migration failed for {next_sat}")
                 continue
+
+            migrations_count += 1
 
             # Notify client of migration
             notify_client_retry("client.gst.celestial", sat_domain)
@@ -451,38 +425,6 @@ def main():
         bytes_per_key=bytes_per_key,
         period_seconds=check_period,
     )
-
-    # TODO: Cleanup
-    # for connected_sat in connected_sats:
-    #     logging.info(f"Connected sat: {connected_sat}")
-    #     sat_id = connected_sat["sat"]
-    #     shell_id = sat_id["shell"]
-    #     sat_id = sat_id["sat"]
-    #     sat_info = get_sat(shell_id, sat_id, gateway)
-    #     logging.info(f"/sat/{sat_id}:\n{sat_info}\n")
-
-    #     path = get_path("gst", "berlin", shell_id, sat_id, gateway)
-    #     logging.info(f"/path/gst/berlin/{shell_id}/{sat_id}:\n{path}\n")
-
-    #     sat_domain = build_sat_domain(shell_id, sat_id)
-    #     logging.info(f"Pinging {sat_domain}")
-    #     sat_ping = ping3.ping(sat_domain, unit="ms")
-    #     logging.info(f"Ping to {sat_domain}: {sat_ping}")
-
-    # for i in range(25):
-    #     sat = get_sat(0, i, gateway)
-    #     logging.info(f"/shell/{0}/{i}:\n{sat}\n")
-
-    # for i in range(0, 5):
-    #     for j in range(0, 5):
-    #         path = get_path(0, i, 0, j, gateway)
-    #         if path:
-    #             logging.info(f"/path/{0}/{i}/{0}/{j}:\n{path}\n")
-
-    # for i in range(0, 5):
-    #     path = get_path("gst", "berlin", 0, i, gateway)
-    #     if path:
-    #         logging.info(f"/path/gst/berlin/{0}/{i}:\n{path}\n")
 
 
 if __name__ == "__main__":

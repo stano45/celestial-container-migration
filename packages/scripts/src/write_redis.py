@@ -1,6 +1,8 @@
+import os
 import random
 import string
 import sys
+import time
 from tqdm import tqdm
 import redis
 
@@ -15,14 +17,29 @@ def generate_random_string(bytes):
 
 
 def write_data(redis_client, keys_count, bytes_per_key):
-    data = {}
-    for i in tqdm(range(1, keys_count + 1), desc="Writing data", ncols=100):
+    # run_command(
+    #     f"podman exec redis redis-cli "
+    #     f"DEBUG POPULATE {keys_count} key {bytes_per_key}"
+    # )
+    start = time.time()
+    pipe = redis_client.pipeline()
+    # data = {}
+    # for i in tqdm(
+    #     range(1, keys_count + 1), desc="Writing data", ncols=100
+    # ):
+    for i in range(1, keys_count + 1):
         key = f"key{i}"
         # value = generate_random_string(bytes_per_key)
-        value = "0" * bytes_per_key
-        redis_client.set(key, value)
-        data[key] = value
-    return data
+        # redis_client.set(key, value)
+        value = os.urandom(bytes_per_key)
+        pipe.set(key, value)
+        if i % 1000 == 0:  # Execute every 1000 commands
+            pipe.execute()
+            pass
+    # return data
+    pipe.execute()
+    end = time.time()
+    print(f"Time to write {keys_count} keys: {end - start} seconds")
 
 
 def verify_data(redis_client, data):
@@ -67,13 +84,13 @@ def main():
 
     print(f"Finished writing {keys_count} keys")
 
-    print("Verifying data...")
-    try:
-        verify_data(redis_client=redis_client, data=known_key_values)
-    except Exception as err:
-        print("Error verifying data: ", err)
-    else:
-        print("Data verified successfully")
+    # print("Verifying data...")
+    # try:
+    #     verify_data(redis_client=redis_client, data=known_key_values)
+    # except Exception as err:
+    #     print("Error verifying data: ", err)
+    # else:
+    #     print("Data verified successfully")
 
 
 if __name__ == "__main__":
