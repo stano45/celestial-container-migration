@@ -14,8 +14,9 @@ migration_file_name=$1
 client_file_name=$2
 plot_title=$3
 
-SCRIPT_PATH=$(dirname $(realpath -s $0))
+SCRIPT_PATH=$(cd "$(dirname "$0")" && pwd)
 PYTHON_FILES=$SCRIPT_PATH/src
+
 
 echo "Migration file name: $migration_file_name"
 echo "Client file name: $client_file_name"
@@ -29,5 +30,5 @@ python3 $PYTHON_FILES/stats_downtime.py "$client_file_name" "$migration_file_nam
 echo "Generating criu plot..."
 python3 $PYTHON_FILES/plot_criu_speed_pie_chart.py $migration_file_name "$plot_title"
 
-# echo "Generating migration line plot..."
-# python3 $PYTHON_FILES/plot_migration_speed_line_chart.py $migration_file_name "$plot_title"
+echo "Generating migration line plot..."
+python3 $PYTHON_FILES/plot_migration_speed_line_chart.py $migration_file_name "$plot_title"

@@ -33,7 +33,8 @@ plt.ylabel("Downtime (%)")
 # Title
 # plt.title("Downtime vs Instance Size")
 
-
+plt.ylim([0, 100])
+plt.grid(True)
 plt.savefig(
     "../../fig/plot_downtime_percent.pdf",
     dpi=1000,

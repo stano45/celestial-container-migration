@@ -92,9 +92,9 @@ plt.savefig(
 )
 
 # # Bar chart for restore phase contribution
-# plt.figure(figsize=(12, 9))
-# plt.bar(restore_contributions.index, restore_contributions)
-# plt.title("Restore Phase Contribution")
-# plt.ylabel("Duration (ms)")
-# plt.xticks(rotation=45)
-# plt.savefig(f"restore_phase_bar_{file_name_without_extension}.pdf")
+plt.figure(figsize=(12, 9))
+plt.bar(restore_contributions.index, restore_contributions)
+plt.title("Restore Phase Contribution")
+plt.ylabel("Duration (ms)")
+plt.xticks(rotation=45)
+plt.savefig(f"restore_phase_bar_{file_name_without_extension}.pdf")

@@ -128,11 +128,16 @@ mean_total_durations = (
 plt.figure(figsize=(15, 5))
 sns.set_theme()
 # Define colors from Seaborn's palette
-colors = sns.color_palette("deep", n_colors=3)
+colors = sns.color_palette("deep", n_colors=4)
 # Instance sizes
 instance_sizes = np.array([0, 100, 500, 1000, 1500, 2000])
+
+# Determine unified y-axis limits based on all durations
+all_durations = np.concatenate([mean_total_durations, mean_c_durations, mean_r_durations, mean_rest_durations])
+y_min, y_max = all_durations.min(), all_durations.max() * 1.1
+
 # Plot 1: Total Duration vs. Instance Size
-plt.subplot(1, 3, 1)
+plt.figure(figsize=(8, 6))
 plt.plot(
     instance_sizes,
     mean_total_durations,
@@ -145,12 +150,15 @@ plt.plot(
 )
 plt.xlabel("Instance size (MB)")
 plt.ylabel("Duration (s)")
-plt.title("Total Migration Duration vs. Instance Size")
+# plt.title("Total Migration Duration vs. Instance Size")
+plt.ylim([y_min, y_max])
 plt.grid(True)
 plt.legend()
+plt.savefig("../../fig/total_migration_duration_vs_instance_size.pdf", dpi=1000, format="pdf")
+plt.close()
 
 # Plot 2: Checkpoint Duration vs. Instance Size
-plt.subplot(1, 3, 2)
+plt.figure(figsize=(8, 6))
 plt.plot(
     instance_sizes,
     mean_c_durations,
@@ -163,12 +171,15 @@ plt.plot(
 )
 plt.xlabel("Instance size (MB)")
 plt.ylabel("Duration (s)")
-plt.title("Checkpoint Duration vs. Instance Size")
+# plt.title("Checkpoint Duration vs. Instance Size")
+plt.ylim([y_min, y_max])
 plt.grid(True)
 plt.legend()
+plt.savefig("../../fig/checkpoint_duration_vs_instance_size.pdf", dpi=1000, format="pdf")
+plt.close()
 
 # Plot 3: Restore Duration vs. Instance Size
-plt.subplot(1, 3, 3)
+plt.figure(figsize=(8, 6))
 plt.plot(
     instance_sizes,
     mean_r_durations,
@@ -181,15 +192,93 @@ plt.plot(
 )
 plt.xlabel("Instance size (MB)")
 plt.ylabel("Duration (s)")
-plt.title("Restore Duration vs. Instance Size")
+# plt.title("Restore Duration vs. Instance Size")
+plt.ylim([y_min, y_max])
 plt.grid(True)
 plt.legend()
+plt.savefig("../../fig/restore_duration_vs_instance_size.pdf", dpi=1000, format="pdf")
+plt.close()
 
-plt.tight_layout()
-
-# Save the plot
-plt.savefig(
-    "../../fig/avg_duration_vs_instance_size.pdf",
-    dpi=1000,
-    format="pdf",
+# Plot 4: Rest Duration vs. Instance Size
+plt.figure(figsize=(8, 6))
+plt.plot(
+    instance_sizes,
+    mean_rest_durations,
+    color=colors[3],
+    marker="o",
+    linestyle="-",
+    linewidth=2,
+    markersize=5,
+    label="Rest Duration",
 )
+plt.xlabel("Instance size (MB)")
+plt.ylabel("Duration (s)")
+# plt.title("Rest Duration vs. Instance Size")
+plt.ylim([y_min, y_max])
+plt.grid(True)
+plt.legend()
+plt.savefig("../../fig/rest_duration_vs_instance_size.pdf", dpi=1000, format="pdf")
+plt.close()
+
+# # Plot 1: Total Duration vs. Instance Size
+# plt.subplot(1, 3, 1)
+# plt.plot(
+#     instance_sizes,
+#     mean_total_durations,
+#     color=colors[0],
+#     marker="o",
+#     linestyle="-",
+#     linewidth=2,
+#     markersize=5,
+#     label="Total Migration Duration",
+# )
+# plt.xlabel("Instance size (MB)")
+# plt.ylabel("Duration (s)")
+# plt.title("Total Migration Duration vs. Instance Size")
+# plt.grid(True)
+# plt.legend()
+
+# # Plot 2: Checkpoint Duration vs. Instance Size
+# plt.subplot(1, 3, 2)
+# plt.plot(
+#     instance_sizes,
+#     mean_c_durations,
+#     color=colors[1],
+#     marker="o",
+#     linestyle="-",
+#     linewidth=2,
+#     markersize=5,
+#     label="Checkpoint Duration",
+# )
+# plt.xlabel("Instance size (MB)")
+# plt.ylabel("Duration (s)")
+# plt.title("Checkpoint Duration vs. Instance Size")
+# plt.grid(True)
+# plt.legend()
+
+# # Plot 3: Restore Duration vs. Instance Size
+# plt.subplot(1, 3, 3)
+# plt.plot(
+#     instance_sizes,
+#     mean_r_durations,
+#     color=colors[2],
+#     marker="o",
+#     linestyle="-",
+#     linewidth=2,
+#     markersize=5,
+#     label="Restore Duration",
+# )
+# plt.xlabel("Instance size (MB)")
+# plt.ylabel("Duration (s)")
+# plt.title("Restore Duration vs. Instance Size")
+# plt.grid(True)
+# plt.legend()
+
+# plt.tight_layout()
+
+# # Save the plot
+# plt.savefig(
+#     "../../fig/avg_duration_vs_instance_size.pdf",
+#     dpi=1000,
+#     format="pdf",
+# )

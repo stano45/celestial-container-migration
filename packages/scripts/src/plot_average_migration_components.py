@@ -86,9 +86,12 @@ mean_c_duration_2000 = df_2000[CHECKPOINT_DURATION].mean() / 1000000
 mean_r_duration_2000 = df_2000[RESTORE_DURATION].mean() / 1000000
 mean_rest_duration_2000 = df_2000["rest_duration"].mean() / 1000000
 
-# complete here
+instance_sizes = ["0", "100", "500", "1000", "1500", "2000"]
+
+
+
 data = {
-    "Instance Size (MB)": ["0", "100", "500", "1000", "1500", "2000"],
+    "Instance Size (MB)": instance_sizes,
     "Checkpoint Duration (s)": [
         mean_c_duration_0,
         mean_c_duration_100,
@@ -151,8 +154,17 @@ plt.ylabel("Mean event duration (s)")
 # plt.title("Mean Migration Duration vs Instance Size")
 plt.legend()
 # Save the plot
+
 plt.savefig(
     "../../fig/avg_migration_durations_components.pdf",
     dpi=1000,
     format="pdf",
 )
+
+
+for size in instance_sizes:
+    durations = df_plot[df_plot["Instance Size (MB)"] == size][["Checkpoint Duration (s)", "Restore Duration (s)", "Rest Duration (s)"]].iloc[0]
+    plt.figure()
+    plt.pie(durations, labels=["Checkpoint", "Restore", "Rest"], colors=colors, autopct='%1.1f%%')
+    # plt.title(f'Instance Size {size} MB')
+    plt.savefig(f"../../fig/migration_components_pie_{size}.pdf", dpi=1000, format="pdf")
