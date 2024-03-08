@@ -1,3 +1,4 @@
+printf "Generating aggregate plots...\n"
 python src/plot_duration_vs_instance_size.py ../../data/migration-0.csv ../../data/migration-100.csv ../../data/migration-500.csv ../../data/migration-1000.csv ../../data/migration-1500.csv ../../data/migration-2000.csv
 python src/plot_average_migration_components.py ../../data/migration-0.csv ../../data/migration-100.csv ../../data/migration-500.csv ../../data/migration-1000.csv ../../data/migration-1500.csv ../../data/migration-2000.csv
 python src/plot_average_migration.py ../../data/migration-0.csv ../../data/migration-100.csv ../../data/migration-500.csv ../../data/migration-1000.csv ../../data/migration-1500.csv ../../data/migration-2000.csv 

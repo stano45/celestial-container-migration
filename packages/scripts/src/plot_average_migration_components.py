@@ -117,7 +117,7 @@ data = {
         mean_rest_duration_2000,
     ],
 }
-print(data)
+# print(data)
 df_plot = pd.DataFrame(data)
 
 plt.figure(figsize=(12, 6))

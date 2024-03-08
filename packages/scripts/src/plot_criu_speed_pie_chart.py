@@ -80,21 +80,21 @@ plt.pie(
 # plt.savefig(f"restore_phase_{file_name_without_extension}.pdf")
 
 
-plt.figure(figsize=(12, 9))
-plt.bar(checkpoint_contributions.index, checkpoint_contributions)
-# plt.title(f"Checkpoint Phase Contribution ({plot_title})")
-plt.ylabel("Duration (ms)")
-plt.xticks(rotation=45)
-plt.savefig(
-    f"../../fig/checkpoint_phase_bar_{file_name_without_extension}.pdf",
-    dpi=1000,
-    format="pdf",
-)
+# plt.figure(figsize=(12, 9))
+# plt.bar(checkpoint_contributions.index, checkpoint_contributions)
+# # plt.title(f"Checkpoint Phase Contribution ({plot_title})")
+# plt.ylabel("Duration (ms)")
+# plt.xticks(rotation=45)
+# plt.savefig(
+#     f"../../fig/checkpoint_phase_bar_{file_name_without_extension}.pdf",
+#     dpi=1000,
+#     format="pdf",
+# )
 
 # # Bar chart for restore phase contribution
-plt.figure(figsize=(12, 9))
-plt.bar(restore_contributions.index, restore_contributions)
-plt.title("Restore Phase Contribution")
-plt.ylabel("Duration (ms)")
-plt.xticks(rotation=45)
-plt.savefig(f"restore_phase_bar_{file_name_without_extension}.pdf")
+# plt.figure(figsize=(12, 9))
+# plt.bar(restore_contributions.index, restore_contributions)
+# plt.title("Restore Phase Contribution")
+# plt.ylabel("Duration (ms)")
+# plt.xticks(rotation=45)
+# plt.savefig(f"restore_phase_bar_{file_name_without_extension}.pdf")
