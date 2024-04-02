@@ -6,19 +6,22 @@ INSTANCE_INDEX=$1
 GCP_REGION="europe-west3"
 GCP_ZONE="a"
 HOST_INSTANCE="celestial-host-$INSTANCE_INDEX"
+
+# Make sure to change the paths
 CELESTIAL_PATH="/home/stanley/celestial"
+CELESTIAL_CONTAINER_MIGRATION_PATH="/home/stanley/celestial-container-migration"
 
 # Copy binary and images to the specific host instance
 gcloud compute scp --zone="$GCP_REGION-$GCP_ZONE" \
     $CELESTIAL_PATH/celestial.bin $HOST_INSTANCE:.
 gcloud compute scp --zone="$GCP_REGION-$GCP_ZONE" \
-    ~/celestial-container-migration/celestial-app/sat.img $HOST_INSTANCE:.
+    $CELESTIAL_CONTAINER_MIGRATION_PATH/celestial-app/sat.img $HOST_INSTANCE:.
 gcloud compute scp --zone="$GCP_REGION-$GCP_ZONE" \
-    ~/celestial-container-migration/celestial-app/gst.img $HOST_INSTANCE:.
+    $CELESTIAL_CONTAINER_MIGRATION_PATH/celestial-app/gst.img $HOST_INSTANCE:.
 gcloud compute scp --zone="$GCP_REGION-$GCP_ZONE" \
-    ~/celestial-container-migration/celestial-app/client.img $HOST_INSTANCE:.
+    $CELESTIAL_CONTAINER_MIGRATION_PATH/celestial-app/client.img $HOST_INSTANCE:.
 gcloud compute scp --zone="$GCP_REGION-$GCP_ZONE" \
-    ~/celestial-container-migration/firecracker/vmlinux.bin $HOST_INSTANCE:.
+    $CELESTIAL_CONTAINER_MIGRATION_PATH/firecracker/vmlinux.bin $HOST_INSTANCE:.
 
 # Move the files to their respective directories on the host
 gcloud compute ssh --zone="$GCP_REGION-$GCP_ZONE" $HOST_INSTANCE \
