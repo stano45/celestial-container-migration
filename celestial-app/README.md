@@ -40,7 +40,7 @@ The firecracker microVMs require a custom Linux kernel to enable required kernel
 2. Once both VMs are up and running, use the following scripts:
    - `./copy_to_host.sh 0` to copy all required resources to host 0 (the only one) move them to the correct directories, restart the instance, wait for it to boot, and then start a Celestial instance.
 
-   - `./copy_to_coord` to copy all required resources to the coordinator instance, build the Celestial Docker image and ssh into the coordinator.
+   - `./copy_to_coord.sh` to copy all required resources to the coordinator instance, build the Celestial Docker image and ssh into the coordinator.
 
    - Once both the host and coordinator are ready, run `sudo docker run --rm -it -p 8000:8000 -v $(pwd)/celestial.toml:/config.toml celestial /config.toml` in the coordinator shell to start the experiments.
 
