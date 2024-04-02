@@ -32,7 +32,7 @@ This command will:
 4. Build the images using `rootfsbuilder`.
 
 ## Building a Linux Kernel
-The firecracker microVMs require a custom Linux kernel to enable required kernel flags for CRIU. We provided a config file `/celestial-app/.vmlinux-5.15.138` which can be used to build the kernel (for Linux 5.15.138). To build the kernel, follow the instructions provided by Celestial [here](https://openfogstack.github.io/celestial/kernel). Once you're done building the kernel, place it into `celestial-app` directory. This is crucial for the deployment scripts to work.
+The firecracker microVMs require a custom Linux kernel to enable required kernel flags for CRIU. We provided a config file [`/celestial-app/.vmlinux-5.15.138`](/celestial-app/.vmlinux-5.15.138.config) which can be used to build the kernel (for Linux 5.15.138). To build the kernel, follow the instructions provided by Celestial [here](https://openfogstack.github.io/celestial/kernel). Once you're done building the kernel, place it into `celestial-app` directory. This is crucial for the deployment scripts to work.
 
 ## Deploying & Running Experiments
 1. Deploy Celestial's infrastructure. Celestial has recently become cloud-agnostic, but this project still runs on GCP. To deploy Celestial on GCP, follow the instructions within the Celestial repo. Make sure to use our custom `main.tf` and `variables.tf` files in the `terraform` directory in this repo. For more info, see the README in the `terraform` directory.
