@@ -19,37 +19,29 @@
 
 # $1 = filename for your rootfs
 
-mkdir -p ./tmp || exit 1
+set -ex
 
-cp -r  minirootfs/* ./tmp/ || exit 1
+mkdir -p ./tmp
+
+cp -r  minirootfs/* ./tmp/
 
 # if you don't do this, apk can't access its repositories
-cp /etc/resolv.conf ./tmp/etc/resolv.conf || exit 1
-cp interfaces ./tmp/etc/network/interfaces || exit 1
-cp inittab ./tmp/etc/inittab || exit 1
-cp start-script ./tmp/start.sh || exit 1
-cp /app.sh ./tmp/app.sh || exit 1
+cp /etc/resolv.conf ./tmp/etc/resolv.conf
+cp interfaces ./tmp/etc/network/interfaces
+cp inittab ./tmp/etc/inittab
+cp run-user-script ./tmp/sbin/run-user-script
+cp fcinit ./tmp/sbin/fcinit
+cp ceinit ./tmp/sbin/ceinit
+cp /app.sh ./tmp/app.sh
 mkdir -p ./tmp/dev/
 mount --bind /dev ./tmp/dev/
-
-if [ -d "/files" ]; then
-    cp -rv /files/* ./tmp/ || exit 1
-fi
-
-cat > ./tmp/prepare.sh <<EOF
-passwd root -d root
-apk add -u openrc ca-certificates
-rc-update add devfs boot
-rc-update add procfs boot
-rc-update add sysfs boot
-exit
-EOF
 
 if [ -d "/files" ]; then
     cp -rv /files/* ./tmp/
 fi
 
-chroot ./tmp/ /bin/sh /prepare.sh || exit 1
+cp prepare.sh ./tmp/prepare.sh
+chroot ./tmp/ /bin/sh /prepare.sh
 
 if [ -f "/base.sh" ]; then
     cp /base.sh ./tmp/base.sh
@@ -61,14 +53,13 @@ fi
 mkdir -p ./tmp/overlay/root \
     ./tmp/overlay/work \
     ./tmp/mnt \
-    ./tmp/rom \
-    || exit 1
+    ./tmp/rom
 
 # now switch back to a public name server
 echo nameserver 1.1.1.1 > ./tmp/etc/resolv.conf
 
 rm ./tmp/prepare.sh
 
-mksquashfs ./tmp rootfs.img -noappend || exit 1
+mksquashfs ./tmp rootfs.img -noappend
 
 mv rootfs.img /opt/code/"$1"

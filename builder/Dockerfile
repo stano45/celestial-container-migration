@@ -15,20 +15,38 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-FROM debian:latest
+FROM debian:sid
 
-RUN apt update
-RUN apt install -y wget
-RUN apt install -y squashfs-tools
+ARG ALPINE_VERSION_MAJOR="3"
+ARG ALPINE_VERSION_MINOR="18"
+ARG ALPINE_VERSION_PATCH="5"
+ARG ALPINE_ARCH="x86_64"
+
+ARG ALPINE_VERSION="${ALPINE_VERSION_MAJOR}.${ALPINE_VERSION_MINOR}.${ALPINE_VERSION_PATCH}"
+
+RUN apt update && \
+    apt install -y \
+    wget \
+    squashfs-tools \
+    gcc && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN mkdir minirootfs
-RUN wget http://dl-cdn.alpinelinux.org/alpine/v3.19/releases/x86_64/alpine-minirootfs-3.19.0-x86_64.tar.gz
-RUN cd minirootfs && \
-    tar xzf ../alpine-minirootfs-3.19.0-x86_64.tar.gz
+RUN wget http://dl-cdn.alpinelinux.org/alpine/v${ALPINE_VERSION_MAJOR}.${ALPINE_VERSION_MINOR}/releases/${ALPINE_ARCH}/alpine-minirootfs-${ALPINE_VERSION}-${ALPINE_ARCH}.tar.gz && \
+    cd minirootfs && \
+    tar xzf ../alpine-minirootfs-${ALPINE_VERSION}-${ALPINE_ARCH}.tar.gz && \
+    cd .. && \
+    rm alpine-minirootfs-${ALPINE_VERSION}-${ALPINE_ARCH}.tar.gz
+
+COPY fcinit.c fcinit.c
+RUN gcc -static -O3 -o ./fcinit fcinit.c && \
+    rm fcinit.c
 
 COPY inittab inittab
 COPY interfaces interfaces
-COPY start-script start-script
+COPY run-user-script run-user-script
+COPY prepare.sh prepare.sh
+COPY ceinit ceinit
 
 COPY build-script.sh /build-script.sh
 
