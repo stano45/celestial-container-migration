@@ -13,4 +13,5 @@ ping3==4.0.4
 requests==2.31.0
 urllib3==2.1.0
 werkzeug==3.0.1
+wheel==0.43.0
 zipp==3.17.0

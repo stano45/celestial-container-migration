@@ -15,7 +15,7 @@ Make sure to run `terraform destroy` after you're done with the experiments to a
 - `docker`
 - `pip`
 - `python3`
-- `rootfsbuilder` tool from the Celestial repo.
+- `rootfsbuilder` tool (see the [builder](../builder/) directory).
 
 
 ### Building Images

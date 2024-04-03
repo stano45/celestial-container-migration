@@ -10,4 +10,5 @@ MarkupSafe==2.1.4
 redis==5.0.1
 tqdm==4.66.1
 werkzeug==3.0.1
+wheel==0.43.0
 zipp==3.17.0
