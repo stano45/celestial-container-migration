@@ -1,6 +1,8 @@
 # Terraform Configuration for Celestial
 This directory contains the Terraform configuration files for the deployment of Celestial.  Simply copy these files to Celestial's terraform directory and run `terraform plan` to see what will be deployed and `terraform apply` to deploy the instances.
 
+Note: Make sure to add your project ID to the `variables.tf` file.
+
 ## What is Deployed
 The Terraform configuration deploys the following resources:
 1. One `n2-custom-8-307200-ext` host instance with 8 vCPUs, 307200 MB of memory and 500 GB of `pd-ssd` storage.
