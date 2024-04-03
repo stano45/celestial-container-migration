@@ -1,5 +1,6 @@
 variable "gcp_project" {
-  default = "celestial-container-migration"
+  #TODO: change this to your GCP project ID
+  default = ""
 }
 
 variable "gcp_region" {

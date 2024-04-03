@@ -15,7 +15,8 @@ Make sure to run `terraform destroy` after you're done with the experiments to a
 - `docker`
 - `pip`
 - `python3`
-- `rootfsbuilder` tool (see the [builder](../builder/) directory).
+- `rootfsbuilder` tool (see the [builder](../builder/) directory)
+- `gcloud` CLI tool (for copying images to GCP) - this needs to be configured for a GCP project
 
 
 ### Building Images
