@@ -165,6 +165,6 @@ plt.savefig(
 for size in instance_sizes:
     durations = df_plot[df_plot["Instance Size (MB)"] == size][["Checkpoint Duration (s)", "Restore Duration (s)", "Rest Duration (s)"]].iloc[0]
     plt.figure()
-    plt.pie(durations, labels=["Checkpoint", "Restore", "Rest"], colors=colors, autopct='%1.1f%%')
+    plt.pie(durations, labels=["Checkpoint", "Restore", "Rest"], colors=[colors[1], colors[0], colors[2]], autopct='%1.1f%%')
     # plt.title(f'Instance Size {size} MB')
     plt.savefig(f"../../fig/migration_components_pie_{size}.pdf", dpi=1000, format="pdf")
