@@ -91,6 +91,7 @@ def run_operation(op):
             key = random.randint(0, 100000)
         else:
             key = random.choice(list(known_key_values.keys()))
+        # This code is commented out because the values always match.
         # expected_value = known_key_values.get(key)
         # actual_value = redis_client.get(key)
         redis_client.get(key)

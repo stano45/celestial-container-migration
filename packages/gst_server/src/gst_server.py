@@ -282,8 +282,6 @@ def test_migration(gateway, instance_size_mb, bytes_per_key, period_seconds=5):
         current_sat = None
 
         # Keep track of seen sats
-        # TODO: add logic to remove old sats
-        # TODO: to allow migrations after the first orbit
         migrations_count = 0
         seen_sats = {}
         while True:
@@ -306,7 +304,6 @@ def test_migration(gateway, instance_size_mb, bytes_per_key, period_seconds=5):
                     sat = connected_sats[0]["sat"]
                 else:
                     # Choose the one with a larger ID
-                    # TODO: choose the one that just entered the bounding box
                     sat = connected_sats[0]["sat"]
                     for connected_sat in connected_sats:
                         if connected_sat["sat"]["sat"] > sat["sat"]:
@@ -337,8 +334,6 @@ def test_migration(gateway, instance_size_mb, bytes_per_key, period_seconds=5):
                 continue
 
             # Container is running on current_sat, perform migration
-            # TODO: Add logic to not do this periodically, but only when
-            # the satellite is about to leave the bounding box
             next_sat = None
             for connected_sat in connected_sats:
                 sat = connected_sat["sat"]

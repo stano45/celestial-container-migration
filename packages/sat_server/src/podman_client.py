@@ -79,7 +79,6 @@ class PodmanClient:
                     f"{checkpoint_path} with {stats=}"
                 )
                 logging.info("Waiting for the container to start...")
-                # TODO: use the container id from the stats
                 self.wait_for_redis("redis")
                 return stats
             except RuntimeError as e:
